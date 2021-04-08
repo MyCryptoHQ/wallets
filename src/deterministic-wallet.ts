@@ -10,7 +10,15 @@ export abstract class DeterministicWallet {
   abstract getWallet(path: string): Promise<Wallet>;
   protected abstract getHDNode(path: string): Promise<HDNode>;
 
-  async getAddresses({ path, limit, offset = 0 }: { path: string; limit: number; offset: number }) {
+  async getAddresses({
+    path,
+    limit,
+    offset = 0
+  }: {
+    path: string;
+    limit: number;
+    offset?: number;
+  }) {
     const masterNode = await this.getHDNode(path);
     const addresses = [];
     for (let i = 0; i < limit; i++) {
