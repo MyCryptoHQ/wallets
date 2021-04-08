@@ -1,14 +1,6 @@
 {
   "comments": false,
-  "presets": [
-    "@babel/preset-typescript",
-    [
-      "@babel/preset-react",
-      {
-        "runtime": "automatic"
-      }
-    ]
-  ],
+  "presets": ["@babel/preset-typescript"],
   "plugins": ["babel-plugin-tsconfig-paths"],
   "env": {
     "cjs": {

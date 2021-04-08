@@ -79,17 +79,7 @@
             "ignoreRestSiblings": true,
             "argsIgnorePattern": "^_"
           }
-        ],
-        "react/display-name": "off",
-        "react/no-unescaped-entities": "off",
-        "react/prop-types": "off",
-        "react/react-in-jsx-scope": "off",
-        "react-hooks/exhaustive-deps": "off"
-      },
-      "settings": {
-        "react": {
-          "version": "detect"
-        }
+        ]
       },
       "parserOptions": {
         "ecmaFeatures": {
