@@ -1,27 +1,27 @@
 import { decryptJsonWalletSync } from '@ethersproject/json-wallets';
-import { addHexPrefix, getKeystoreType, KeystoreType } from '@utils';
 import Wallet, { thirdparty } from 'ethereumjs-wallet';
 
+import { addHexPrefix, getKeystoreType, KeystoreType } from '@utils';
 
 import { PrivateKey } from './private-key';
 
 export class Keystore extends PrivateKey {
-  constructor(readonly keystore: string, readonly password: string) {
+  constructor(readonly keystore: string, readonly password?: string) {
     super(addHexPrefix(Keystore.decryptKeystoreFile(keystore, password)));
   }
 
-  private static decryptKeystoreFile(keystore: string, password: string): string {
+  private static decryptKeystoreFile(keystore: string, password?: string): string {
     const type = getKeystoreType(keystore);
 
     // While Ethers.js does support presale wallets, the support is limited, so instead we use
     // ethereum-js wallet here.
     if (type === KeystoreType.PRESALE || type === KeystoreType.PRESALE_BKP) {
-      const wallet = Wallet.fromEthSale(keystore, password);
+      const wallet = Wallet.fromEthSale(keystore, password!);
       return wallet.getPrivateKey().toString('hex');
     }
 
     if (type === KeystoreType.V1) {
-      const wallet = thirdparty.fromEtherWallet(keystore, password);
+      const wallet = thirdparty.fromEtherWallet(keystore, password!);
       return wallet.getPrivateKey().toString('hex');
     }
 
@@ -30,7 +30,7 @@ export class Keystore extends PrivateKey {
       return privKey;
     }
 
-    const { privateKey } = decryptJsonWalletSync(keystore, password);
+    const { privateKey } = decryptJsonWalletSync(keystore, password!);
     return privateKey;
   }
 }

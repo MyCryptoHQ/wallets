@@ -5,7 +5,6 @@ import type { TAddress } from '@types';
 import { addHexPrefix } from '@utils';
 import type { Wallet } from '@wallet';
 
-
 export class PrivateKey implements Wallet {
   constructor(private readonly privateKey: string) {}
 

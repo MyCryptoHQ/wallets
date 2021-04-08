@@ -1,15 +1,14 @@
 import type { HDNode } from '@ethersproject/hdnode';
-import { toChecksumAddress } from '@utils';
 
 import type { TAddress } from '@types';
+import { toChecksumAddress } from '@utils';
 
-import type { Wallet } from '.';
-
+import type { Wallet } from './wallet';
 
 export abstract class DeterministicWallet {
-  abstract async getAddress(path: string): Promise<TAddress>;
-  abstract async getWallet(path: string): Promise<Wallet>;
-  protected abstract async getHDNode(path: string): Promise<HDNode>;
+  abstract getAddress(path: string): Promise<TAddress>;
+  abstract getWallet(path: string): Promise<Wallet>;
+  protected abstract getHDNode(path: string): Promise<HDNode>;
 
   async getAddresses({ path, limit, offset = 0 }: { path: string; limit: number; offset: number }) {
     const masterNode = await this.getHDNode(path);

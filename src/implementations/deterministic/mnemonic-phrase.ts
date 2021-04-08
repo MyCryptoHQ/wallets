@@ -7,7 +7,6 @@ import { PrivateKey } from '@implementations/non-deterministic/private-key';
 import type { TAddress } from '@types';
 import type { Wallet } from '@wallet';
 
-
 export class MnemonicPhrase extends DeterministicWallet {
   constructor(readonly mnemonicPhrase: string, readonly passphrase?: string) {
     super();
@@ -25,7 +24,7 @@ export class MnemonicPhrase extends DeterministicWallet {
     return new PrivateKey(node.privateKey);
   }
 
-  static create(passphrase?: string) {
+  static create(passphrase?: string): MnemonicPhrase {
     const entropy = crypto.randomBytes(MNEMONIC_ENTROPY_BYTES);
     const mnemonicPhrase = entropyToMnemonic(entropy);
 
