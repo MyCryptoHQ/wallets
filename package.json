@@ -33,7 +33,8 @@
     "@ethersproject/hdnode": "5.1.0",
     "@ethersproject/json-wallets": "5.1.0",
     "@ethersproject/wallet": "5.1.0",
-    "ethereumjs-wallet": "1.0.1"
+    "ethereumjs-wallet": "1.0.1",
+    "superstruct": "0.15.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.13.14",

@@ -1,9 +1,10 @@
 import type { TransactionRequest } from '@ethersproject/abstract-provider';
 import { Wallet as EthersWallet } from '@ethersproject/wallet';
-import { addHexPrefix } from '@utils';
-import type { Wallet } from '@wallets/wallet';
 
 import type { TAddress } from '@types';
+import { addHexPrefix } from '@utils';
+import type { Wallet } from '@wallet';
+
 
 export class PrivateKey implements Wallet {
   constructor(private readonly privateKey: string) {}
