@@ -41,11 +41,9 @@
       "files": ["*.ts", "*.tsx"],
       "extends": [
         "plugin:@typescript-eslint/recommended",
-        "plugin:eslint-plugin-import/typescript",
-        "plugin:eslint-plugin-react/recommended",
-        "plugin:eslint-plugin-react-hooks/recommended"
+        "plugin:eslint-plugin-import/typescript"
       ],
-      "plugins": ["@typescript-eslint", "eslint-plugin-react"],
+      "plugins": ["@typescript-eslint"],
       "rules": {
         "@typescript-eslint/consistent-type-assertions": [
           "error",
