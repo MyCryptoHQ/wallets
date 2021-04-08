@@ -10,6 +10,46 @@ import {
 
 import { MnemonicPhrase } from './mnemonic-phrase';
 
+jest.mock('crypto', () => ({
+  ...jest.requireActual('crypto'),
+  randomBytes: jest
+    .fn()
+    .mockImplementation(() => [
+      223,
+      155,
+      243,
+      126,
+      111,
+      205,
+      249,
+      191,
+      55,
+      230,
+      252,
+      223,
+      155,
+      243,
+      126,
+      111,
+      205,
+      249,
+      191,
+      55,
+      230,
+      252,
+      223,
+      155,
+      243,
+      126,
+      111,
+      205,
+      249,
+      191,
+      55,
+      224
+    ])
+}));
+
 describe('Mnemonic Phrase', () => {
   it('derives addresses correctly', async () => {
     return expect(
@@ -46,6 +86,11 @@ describe('Mnemonic Phrase', () => {
     return expect(new MnemonicPhrase(fMnemonicPhrase).getAddress(fDPath)).resolves.toEqual(
       fAddress
     );
+  });
+
+  it('creates mnemonic correctly', async () => {
+    const mnemonic = await MnemonicPhrase.create();
+    return expect(mnemonic.mnemonicPhrase).toEqual(fMnemonicPhrase);
   });
 
   it('wallet signs transaction correctly', async () => {
