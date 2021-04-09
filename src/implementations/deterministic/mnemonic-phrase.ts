@@ -13,14 +13,12 @@ export class MnemonicPhrase extends DeterministicWallet {
   }
 
   async getAddress(path: string): Promise<TAddress> {
-    const rootNode = HDNode.fromMnemonic(this.mnemonicPhrase, this.passphrase);
-    const node = rootNode.derivePath(path);
+    const node = await this.getHDNode(path);
     return node.address as TAddress;
   }
 
   async getWallet(path: string): Promise<Wallet> {
-    const rootNode = HDNode.fromMnemonic(this.mnemonicPhrase, this.passphrase);
-    const node = rootNode.derivePath(path);
+    const node = await this.getHDNode(path);
     return new PrivateKey(node.privateKey);
   }
 
