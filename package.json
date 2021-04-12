@@ -32,8 +32,12 @@
   "dependencies": {
     "@ethersproject/abstract-provider": "5.1.0",
     "@ethersproject/address": "5.1.0",
+    "@ethersproject/basex": "5.1.0",
+    "@ethersproject/bytes": "5.1.0",
     "@ethersproject/hdnode": "5.1.0",
     "@ethersproject/json-wallets": "5.1.0",
+    "@ethersproject/sha2": "5.1.0",
+    "@ethersproject/signing-key": "5.1.0",
     "@ethersproject/wallet": "5.1.0",
     "@ledgerhq/hw-app-eth": "5.48.0",
     "@ledgerhq/hw-transport": "5.48.0",

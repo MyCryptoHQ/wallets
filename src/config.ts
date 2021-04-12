@@ -1,1 +1,4 @@
 export const MNEMONIC_ENTROPY_BYTES = 32;
+
+export const HARDENED_PREFIX = 0x80000000;
+export const ETHEREUM_P2PKH = 0x0488b21e;
