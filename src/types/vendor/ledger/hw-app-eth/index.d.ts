@@ -29,7 +29,11 @@ declare module '@ledgerhq/hw-app-eth' {
      * @return {Promise<{ publicKey: string, address: string, chainCode?: string }>} A Promise with
      *   the publicKey and address, and optional chain code.
      */
-    getAddress(path: string, display?: boolean, chainCode?: false): Promise<{ publicKey: string; address: string }>;
+    getAddress(
+      path: string,
+      display?: boolean,
+      chainCode?: false
+    ): Promise<{ publicKey: string; address: string }>;
     getAddress(
       path: string,
       display?: boolean,

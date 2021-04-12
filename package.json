@@ -42,6 +42,7 @@
     "@ledgerhq/hw-app-eth": "5.48.0",
     "@ledgerhq/hw-transport": "5.48.0",
     "@ledgerhq/hw-transport-u2f": "5.36.0-deprecated",
+    "@ledgerhq/hw-transport-webhid": "5.49.0",
     "@ledgerhq/hw-transport-webusb": "5.48.0",
     "ethereumjs-wallet": "1.0.1",
     "superstruct": "0.15.1"

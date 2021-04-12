@@ -29,6 +29,7 @@ export abstract class DeterministicWallet {
         return { address, dPath, index: i };
       });
     }
+
     const masterNode = await this.getHDNode(path);
     return new Array(limit).fill(undefined).map((_, index) => {
       const i = offset + index;

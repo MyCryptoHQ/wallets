@@ -1,21 +1,22 @@
 import type { TransactionRequest } from '@ethersproject/abstract-provider';
 import type { SignatureLike } from '@ethersproject/bytes';
 import { serialize as serializeTransaction } from '@ethersproject/transactions';
-import LedgerEth from '@ledgerhq/hw-app-eth';
+import EthereumApp from '@ledgerhq/hw-app-eth';
 import { byContractAddress } from '@ledgerhq/hw-app-eth/erc20';
 import type Transport from '@ledgerhq/hw-transport';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
+import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 
 import type { DerivationPath } from '@dpaths';
-import type { TAddress } from '@types';
+import type { ExtendedKey, TAddress } from '@types';
 import { addHexPrefix, getFullPath, sanitizeTx, stripHexPrefix } from '@utils';
 import type { Wallet } from '@wallet';
 
 import { HardwareWallet } from './hardware-wallet';
 
 class LedgerWalletInstance implements Wallet {
-  constructor(private readonly app: LedgerEth<any>, private readonly path: string) {}
+  constructor(private readonly app: EthereumApp<unknown>, private readonly path: string) {}
 
   async signTransaction(rawTx: TransactionRequest): Promise<string> {
     const transaction = sanitizeTx(rawTx);
@@ -49,9 +50,11 @@ class LedgerWalletInstance implements Wallet {
       throw Error(err + '. Check to make sure contract data is on');
     }
   }
+
   async getAddress(): Promise<TAddress> {
     return (await this.app.getAddress(this.path, true, false)).address as TAddress;
   }
+
   getPrivateKey(): Promise<string> {
     throw new Error('Method not implemented.');
   }
@@ -63,7 +66,7 @@ export class LedgerWallet extends HardwareWallet {
     return wallet.getAddress();
   }
 
-  async getExtendedKey(path: string): Promise<{ publicKey: string; chainCode: string }> {
+  async getExtendedKey(path: string): Promise<ExtendedKey> {
     const app = await this.getApp();
     const { publicKey, chainCode } = await app.getAddress(path, false, true);
     return {
@@ -83,13 +86,17 @@ export class LedgerWallet extends HardwareWallet {
     return new LedgerWalletInstance(app, getFullPath(path, index));
   }
 
-  protected async getApp(): Promise<LedgerEth<any>> {
+  protected async getApp(): Promise<EthereumApp<unknown>> {
     const transport = await this.getTransport();
-    return new LedgerEth(transport);
+    return new EthereumApp(transport);
   }
 
   protected async getTransport(): Promise<Transport> {
     try {
+      if (await TransportWebHID.isSupported()) {
+        return TransportWebHID.create();
+      }
+
       if (await TransportWebUSB.isSupported()) {
         return TransportWebUSB.create();
       }
