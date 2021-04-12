@@ -1,0 +1,1 @@
+export const MNEMONIC_ENTROPY_BYTES = 32;
