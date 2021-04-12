@@ -1,12 +1,5 @@
-import {
-  fAddress,
-  fDPath,
-  fDPathRoot,
-  fMnemonicPhrase,
-  fPrivateKey,
-  fSignedTx,
-  fTransactionRequest
-} from '@fixtures';
+import { DEFAULT_ETH } from '@dpaths';
+import { fAddress, fMnemonicPhrase, fPrivateKey, fSignedTx, fTransactionRequest } from '@fixtures';
 
 import { MnemonicPhrase } from './mnemonic-phrase';
 
@@ -53,7 +46,7 @@ jest.mock('crypto', () => ({
 describe('Mnemonic Phrase', () => {
   it('derives addresses correctly', async () => {
     return expect(
-      new MnemonicPhrase(fMnemonicPhrase).getAddresses({ path: fDPathRoot, limit: 5 })
+      new MnemonicPhrase(fMnemonicPhrase).getAddresses({ path: DEFAULT_ETH, limit: 5 })
     ).resolves.toStrictEqual([
       {
         address: '0x0961Ca10D49B9B8e371aA0Bcf77fE5730b18f2E4',
@@ -83,7 +76,7 @@ describe('Mnemonic Phrase', () => {
     ]);
   });
   it('derives address correctly', async () => {
-    return expect(new MnemonicPhrase(fMnemonicPhrase).getAddress(fDPath)).resolves.toEqual(
+    return expect(new MnemonicPhrase(fMnemonicPhrase).getAddress(DEFAULT_ETH, 0)).resolves.toEqual(
       fAddress
     );
   });
@@ -94,17 +87,17 @@ describe('Mnemonic Phrase', () => {
   });
 
   it('wallet signs transaction correctly', async () => {
-    const wallet = await new MnemonicPhrase(fMnemonicPhrase).getWallet(fDPath);
+    const wallet = await new MnemonicPhrase(fMnemonicPhrase).getWallet(DEFAULT_ETH, 0);
     return expect(wallet.signTransaction(fTransactionRequest)).resolves.toBe(fSignedTx);
   });
 
   it('wallet derives address correctly', async () => {
-    const wallet = await new MnemonicPhrase(fMnemonicPhrase).getWallet(fDPath);
+    const wallet = await new MnemonicPhrase(fMnemonicPhrase).getWallet(DEFAULT_ETH, 0);
     return expect(wallet.getAddress()).resolves.toBe(fAddress);
   });
 
   it('wallet returns its private key correctly', async () => {
-    const wallet = await new MnemonicPhrase(fMnemonicPhrase).getWallet(fDPath);
+    const wallet = await new MnemonicPhrase(fMnemonicPhrase).getWallet(DEFAULT_ETH, 0);
     return expect(wallet.getPrivateKey()).resolves.toBe(fPrivateKey);
   });
 });
