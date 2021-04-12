@@ -46,7 +46,8 @@
     "@ledgerhq/hw-transport-webhid": "5.49.0",
     "@ledgerhq/hw-transport-webusb": "5.48.0",
     "ethereumjs-wallet": "1.0.1",
-    "superstruct": "0.15.1"
+    "superstruct": "0.15.1",
+    "trezor-connect": "8.1.25"
   },
   "devDependencies": {
     "@babel/cli": "^7.13.14",
