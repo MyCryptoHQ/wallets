@@ -12,7 +12,7 @@ describe('createExtendedPublicKey', () => {
       chainCode: '0x7968ee36e0b6d94da4551bac811e7816115d4ebb9e15a6f4068bbc29736d4576'
     };
 
-    expect(createExtendedPublicKey('m/44\'/60\'/0\'/0', parentKey, childKey)).toBe(
+    expect(createExtendedPublicKey("m/44'/60'/0'/0", parentKey, childKey)).toBe(
       'xpub6DreGKvTo5gf1tXu5N86sz922cFfACvEj8oUrL1nJAbngaMriFQDYk3vA1vpXXGyD5MtH2tbQ8JJScFki5TNSJtRF9T2Qq6ZNLSDhRk2bqc'
     );
   });

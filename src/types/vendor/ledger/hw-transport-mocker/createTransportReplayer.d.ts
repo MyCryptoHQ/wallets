@@ -1,6 +1,6 @@
 declare module '@ledgerhq/hw-transport-mocker/createTransportReplayer' {
   import type { Observer, Subscription } from '@ledgerhq/hw-transport';
-import Transport from '@ledgerhq/hw-transport';
+  import Transport from '@ledgerhq/hw-transport';
   import type { RecordStore } from '@ledgerhq/hw-transport-mocker/RecordStore';
 
   class TransportReplayer<Descriptor> extends Transport<Descriptor> {

@@ -258,4 +258,6 @@ export const LEDGER_DERIVATION_PATHS: DerivationPath[] = [
  * While Trezor does support hardened paths, it'd be very tedious for the user to check all the
  * paths currently, since the user would have to confirm each address individually.
  */
-export const TREZOR_DERIVATION_PATHS: DerivationPath[] = [...ALL_DERIVATION_PATHS.filter((path) => !path.isHardened)];
+export const TREZOR_DERIVATION_PATHS: DerivationPath[] = [
+  ...ALL_DERIVATION_PATHS.filter((path) => !path.isHardened)
+];

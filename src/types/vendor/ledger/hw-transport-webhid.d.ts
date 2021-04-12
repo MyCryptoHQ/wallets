@@ -1,7 +1,7 @@
 declare module '@ledgerhq/hw-transport-webhid' {
   import type { DeviceModel } from '@ledgerhq/devices';
   import type { DescriptorEvent, Observer, Subscription } from '@ledgerhq/hw-transport';
-import Transport from '@ledgerhq/hw-transport';
+  import Transport from '@ledgerhq/hw-transport';
 
   export default class TransportWebHID extends Transport<HIDDevice> {
     /**
