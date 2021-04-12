@@ -4,6 +4,7 @@ import { serialize as serializeTransaction } from '@ethersproject/transactions';
 import EthereumApp from '@ledgerhq/hw-app-eth';
 import { byContractAddress } from '@ledgerhq/hw-app-eth/erc20';
 import type Transport from '@ledgerhq/hw-transport';
+import TransportNodeHid from '@ledgerhq/hw-transport-node-hid';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
@@ -15,7 +16,7 @@ import type { Wallet } from '@wallet';
 
 import { HardwareWallet } from './hardware-wallet';
 
-class LedgerWalletInstance implements Wallet {
+export class LedgerWalletInstance implements Wallet {
   constructor(private readonly app: EthereumApp<unknown>, private readonly path: string) {}
 
   async signTransaction(rawTx: TransactionRequest): Promise<string> {
@@ -52,7 +53,7 @@ class LedgerWalletInstance implements Wallet {
   }
 
   async getAddress(): Promise<TAddress> {
-    return (await this.app.getAddress(this.path, true, false)).address as TAddress;
+    return (await this.app.getAddress(this.path, false, false)).address as TAddress;
   }
 
   getPrivateKey(): Promise<string> {
@@ -61,6 +62,10 @@ class LedgerWalletInstance implements Wallet {
 }
 
 export class LedgerWallet extends HardwareWallet {
+  constructor(private readonly transport?: Transport) {
+    super();
+  }
+
   async getAddress(path: DerivationPath, index: number): Promise<TAddress> {
     const wallet = await this.getWallet(path, index);
     return wallet.getAddress();
@@ -87,12 +92,16 @@ export class LedgerWallet extends HardwareWallet {
   }
 
   protected async getApp(): Promise<EthereumApp<unknown>> {
-    const transport = await this.getTransport();
+    const transport = this.transport ?? (await this.getTransport());
     return new EthereumApp(transport);
   }
 
   protected async getTransport(): Promise<Transport> {
     try {
+      if (await TransportNodeHid.isSupported()) {
+        return TransportNodeHid.create();
+      }
+
       if (await TransportWebHID.isSupported()) {
         return TransportWebHID.create();
       }
