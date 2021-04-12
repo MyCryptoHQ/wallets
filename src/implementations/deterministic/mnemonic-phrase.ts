@@ -15,12 +15,15 @@ export class MnemonicPhrase extends DeterministicWallet {
   }
 
   async getAddress(path: DerivationPath, index: number): Promise<TAddress> {
+    if (path.isHardened) {
+      return this.getHardenedAddress(path, index);
+    }
     const node = await this.getHDNode(path);
     return toChecksumAddress(node.derivePath(index.toString(10)).address) as TAddress;
   }
 
   async getHardenedAddress(path: DerivationPath, index: number): Promise<TAddress> {
-    const rootNode = await this.getHDNode(path);
+    const rootNode = HDNode.fromMnemonic(this.mnemonicPhrase, this.passphrase);
     const node = rootNode.derivePath(getFullPath(path, index));
     return toChecksumAddress(node.address) as TAddress;
   }

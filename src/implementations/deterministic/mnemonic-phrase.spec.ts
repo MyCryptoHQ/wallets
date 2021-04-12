@@ -1,4 +1,4 @@
-import { DEFAULT_ETH } from '@dpaths';
+import { DEFAULT_ETH, LEDGER_LIVE_ETH } from '@dpaths';
 import { fAddress, fMnemonicPhrase, fPrivateKey, fSignedTx, fTransactionRequest } from '@fixtures';
 
 import { MnemonicPhrase } from './mnemonic-phrase';
@@ -75,10 +75,49 @@ describe('Mnemonic Phrase', () => {
       }
     ]);
   });
+
+  it('derives hardened addresses correctly', async () => {
+    return expect(
+      new MnemonicPhrase(fMnemonicPhrase).getAddresses({ path: LEDGER_LIVE_ETH, limit: 5 })
+    ).resolves.toStrictEqual([
+      {
+        address: '0x0961Ca10D49B9B8e371aA0Bcf77fE5730b18f2E4',
+        dPath: "m/44'/60'/0'/0/0",
+        index: 0
+      },
+      {
+        address: '0xC99D2d53176a815d5219D04FffD387Df99Db6aa1',
+        dPath: "m/44'/60'/1'/0/0",
+        index: 1
+      },
+      {
+        address: '0xBf8ba9D1FAE216d323b4428f241Db1f3B090fDB3',
+        dPath: "m/44'/60'/2'/0/0",
+        index: 2
+      },
+      {
+        address: '0x014FA4D12fdF3Ad179BA8620bfF4f5f546677763',
+        dPath: "m/44'/60'/3'/0/0",
+        index: 3
+      },
+      {
+        address: '0xD133bE13747FFa612aA67765eDc18C5b751CBA7a',
+        dPath: "m/44'/60'/4'/0/0",
+        index: 4
+      }
+    ]);
+  });
+
   it('derives address correctly', async () => {
     return expect(new MnemonicPhrase(fMnemonicPhrase).getAddress(DEFAULT_ETH, 0)).resolves.toEqual(
       fAddress
     );
+  });
+
+  it('derives hardened address correctly', async () => {
+    return expect(
+      new MnemonicPhrase(fMnemonicPhrase).getAddress(LEDGER_LIVE_ETH, 0)
+    ).resolves.toEqual(fAddress);
   });
 
   it('creates mnemonic correctly', async () => {
