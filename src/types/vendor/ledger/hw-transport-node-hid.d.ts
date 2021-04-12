@@ -1,7 +1,7 @@
-declare module '@ledgerhq/hw-transport-node-hid' {
+declare module '@ledgerhq/hw-transport-node-hid-noevents' {
   import type { DeviceModel } from '@ledgerhq/devices';
   import type { DescriptorEvent, Observer, Subscription } from '@ledgerhq/hw-transport';
-import Transport from '@ledgerhq/hw-transport';
+  import Transport from '@ledgerhq/hw-transport';
 
   export default class TransportNodeHid extends Transport<string> {
     /**

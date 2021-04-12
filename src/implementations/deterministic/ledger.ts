@@ -4,7 +4,7 @@ import { serialize as serializeTransaction } from '@ethersproject/transactions';
 import EthereumApp from '@ledgerhq/hw-app-eth';
 import { byContractAddress } from '@ledgerhq/hw-app-eth/erc20';
 import type Transport from '@ledgerhq/hw-transport';
-import TransportNodeHid from '@ledgerhq/hw-transport-node-hid';
+import TransportNodeHid from '@ledgerhq/hw-transport-node-hid-noevents';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
