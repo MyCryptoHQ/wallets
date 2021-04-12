@@ -21,7 +21,7 @@
         "groups": [["builtin", "external"], "internal", ["parent", "sibling", "index"]],
         "pathGroups": [
           {
-            "pattern": "@{implementations,wallet,deterministic-wallet,utils,types,fixtures}{**,**/**}",
+            "pattern": "@{implementations,wallet,deterministic-wallet,utils,types,dpaths,fixtures}{**,**/**}",
             "group": "internal"
           }
         ],
