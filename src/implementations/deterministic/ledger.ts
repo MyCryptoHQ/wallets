@@ -9,7 +9,7 @@ import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 
 import type { DerivationPath } from '@dpaths';
 import type { TAddress } from '@types';
-import { addHexPrefix, getFullPath, stripHexPrefix } from '@utils';
+import { addHexPrefix, getFullPath, sanitizeTx, stripHexPrefix } from '@utils';
 import type { Wallet } from '@wallet';
 
 import { HardwareWallet } from './hardware-wallet';
@@ -17,7 +17,8 @@ import { HardwareWallet } from './hardware-wallet';
 class LedgerWalletInstance implements Wallet {
   constructor(private readonly app: LedgerEth<any>, private readonly path: string) {}
 
-  async signTransaction(transaction: TransactionRequest): Promise<string> {
+  async signTransaction(rawTx: TransactionRequest): Promise<string> {
+    const transaction = sanitizeTx(rawTx);
     const { to, chainId } = transaction;
 
     if (!chainId) {
@@ -62,7 +63,14 @@ export class LedgerWallet extends HardwareWallet {
     return wallet.getAddress();
   }
 
-  getExtendedKey(path: string): Promise<string> {}
+  async getExtendedKey(path: string): Promise<{ publicKey: string; chainCode: string }> {
+    const app = await this.getApp();
+    const { publicKey, chainCode } = await app.getAddress(path, false, true);
+    return {
+      publicKey,
+      chainCode
+    };
+  }
 
   async getHardenedAddress(path: DerivationPath, index: number): Promise<TAddress> {
     const app = await this.getApp();
