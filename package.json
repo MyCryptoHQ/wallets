@@ -9,7 +9,8 @@
   "module": "lib/es/index.js",
   "types": "typings/src/index.d.ts",
   "files": [
-    "lib"
+    "lib",
+    "typings"
   ],
   "sideEffects": false,
   "scripts": {
