@@ -2,6 +2,7 @@ import type { TransactionRequest } from '@ethersproject/abstract-provider';
 import { BigNumber } from '@ethersproject/bignumber';
 import type { SignatureLike } from '@ethersproject/bytes';
 import { serialize as serializeTransaction } from '@ethersproject/transactions';
+import type { EthereumTransaction } from 'trezor-connect';
 import TrezorConnect from 'trezor-connect';
 
 import type { DerivationPath } from '@dpaths';
@@ -21,7 +22,10 @@ class TrezorWalletInstance implements Wallet {
       throw new Error('Missing chainId or nonce on transaction');
     }
 
-    const result = await TrezorConnect.ethereumSignTransaction({ path: this.path, transaction });
+    const result = await TrezorConnect.ethereumSignTransaction({
+      path: this.path,
+      transaction: { ...transaction, nonce: transaction.nonce.toString(16) } as EthereumTransaction
+    });
     if (!result.success) {
       throw Error(result.payload.error);
     }
