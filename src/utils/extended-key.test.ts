@@ -21,7 +21,7 @@ describe('createExtendedPublicKey', () => {
 describe('getSegmentNumber', () => {
   it('returns the segment number for a derivation path', () => {
     expect(getSegmentNumber('123')).toBe(123);
-    expect(getSegmentNumber('123\'')).toBe(0x80000000 + 123);
+    expect(getSegmentNumber("123'")).toBe(0x80000000 + 123);
   });
 
   it('throws for invalid segments', () => {
