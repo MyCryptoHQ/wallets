@@ -18,7 +18,7 @@ describe('TrezorWalletInstance', () => {
     it('throws if the call to TrezorConnect fails', async () => {
       (TrezorConnect.ethereumSignTransaction as jest.MockedFunction<
         typeof TrezorConnect.ethereumSignTransaction
-      >).mockImplementation(async () => ({
+      >).mockImplementationOnce(async () => ({
         success: false,
         payload: {
           error: 'foo bar'
@@ -57,7 +57,7 @@ describe('TrezorWalletInstance', () => {
     it('throws if the call to TrezorConnect fails', async () => {
       (TrezorConnect.ethereumGetAddress as jest.MockedFunction<
         typeof TrezorConnect.ethereumGetAddress
-      >).mockImplementation(async () => ({
+      >).mockImplementationOnce(async () => ({
         success: false,
         payload: {
           error: 'foo bar'
@@ -110,7 +110,7 @@ describe('TrezorWallet', () => {
     it('throws if the call to TrezorConnect fails', async () => {
       (TrezorConnect.ethereumGetAddress as jest.MockedFunction<
         typeof TrezorConnect.ethereumGetAddress
-      >).mockImplementation(async () => ({
+      >).mockImplementationOnce(async () => ({
         success: false,
         payload: {
           error: 'foo bar'
@@ -209,7 +209,7 @@ describe('TrezorWallet', () => {
     it('throws if the call to TrezorConnect fails', async () => {
       (TrezorConnect.getPublicKey as jest.MockedFunction<
         typeof TrezorConnect.getPublicKey
-      >).mockImplementation(async () => ({
+      >).mockImplementationOnce(async () => ({
         success: false,
         payload: {
           error: 'foo bar'
@@ -222,7 +222,7 @@ describe('TrezorWallet', () => {
   });
 
   describe('getWallet', () => {
-    it('returns an instance of a Ledger wallet at a specific derivation path', async () => {
+    it('returns an instance of a Trezor wallet at a specific derivation path', async () => {
       const wallet = new TrezorWallet();
 
       const instance = await wallet.getWallet(DEFAULT_ETH, 0);
