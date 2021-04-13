@@ -33,6 +33,18 @@ describe('LedgerWalletInstance', () => {
 
       await expect(instance.signTransaction(fTransactionRequest)).resolves.toBe(fSignedTx);
     });
+
+    it('throws on missing chain id', async () => {
+      const store = new RecordStore();
+
+      const transport = createTransportReplayer(store);
+      const wallet = new LedgerWallet(await transport.create());
+      const instance = await wallet.getWallet(DEFAULT_ETH, 0);
+
+      await expect(() =>
+        instance.signTransaction({ ...fTransactionRequest, chainId: undefined })
+      ).rejects.toThrow('Missing chainId on transaction');
+    });
   });
 
   describe('getAddress', () => {

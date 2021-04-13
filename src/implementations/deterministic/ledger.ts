@@ -24,32 +24,28 @@ export class LedgerWalletInstance implements Wallet {
     const { to, chainId } = transaction;
 
     if (!chainId) {
-      throw Error('Missing chainId on tx');
+      throw Error('Missing chainId on transaction');
     }
 
-    try {
-      if (chainId === 1 && to) {
-        const tokenInfo = byContractAddress(to);
-        if (tokenInfo) {
-          await this.app.provideERC20TokenInformation(tokenInfo);
-        }
+    if (chainId === 1 && to) {
+      const tokenInfo = byContractAddress(to);
+      if (tokenInfo) {
+        await this.app.provideERC20TokenInformation(tokenInfo);
       }
-
-      const result = await this.app.signTransaction(
-        this.path,
-        stripHexPrefix(serializeTransaction(transaction))
-      );
-
-      const signature: SignatureLike = {
-        v: parseInt(result.v, 16),
-        r: addHexPrefix(result.r),
-        s: addHexPrefix(result.s)
-      };
-
-      return serializeTransaction(transaction, signature);
-    } catch (err) {
-      throw Error(err + '. Check to make sure contract data is on');
     }
+
+    const result = await this.app.signTransaction(
+      this.path,
+      stripHexPrefix(serializeTransaction(transaction))
+    );
+
+    const signature: SignatureLike = {
+      v: parseInt(result.v, 16),
+      r: addHexPrefix(result.r),
+      s: addHexPrefix(result.s)
+    };
+
+    return serializeTransaction(transaction, signature);
   }
 
   async getAddress(): Promise<TAddress> {
