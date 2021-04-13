@@ -5,6 +5,7 @@ import { ripemd160, sha256 } from '@ethersproject/sha2';
 import { computePublicKey } from '@ethersproject/signing-key';
 
 import type { ExtendedKey } from '@types';
+import { addHexPrefix } from '@utils/hexPrefix';
 
 export const createExtendedPublicKey = (
   childDerivationPath: string,
@@ -13,7 +14,7 @@ export const createExtendedPublicKey = (
 ): string => {
   const pathSegments = childDerivationPath.substring(2).split('/');
 
-  const fingerprint = getFingerprint(parent.publicKey);
+  const fingerprint = getFingerprint(addHexPrefix(parent.publicKey));
   const index = hexZeroPad(hexlify(getSegmentNumber(pathSegments[pathSegments.length - 1])), 4);
 
   return base58check(
@@ -22,8 +23,8 @@ export const createExtendedPublicKey = (
       hexlify(pathSegments.length.toString(16), { allowMissingPrefix: true, hexPad: 'left' }),
       hexlify(fingerprint),
       index,
-      child.chainCode,
-      computePublicKey(child.publicKey, true)
+      addHexPrefix(child.chainCode),
+      computePublicKey(addHexPrefix(child.publicKey), true)
     ])
   );
 };

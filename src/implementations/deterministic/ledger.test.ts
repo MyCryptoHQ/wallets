@@ -108,6 +108,96 @@ describe('LedgerWallet', () => {
     });
   });
 
+  describe('getAddresses', () => {
+    it('fetches multiple addresses for a derivation path', async () => {
+      const store = RecordStore.fromString(`
+        => e002000111048000002c8000003c8000000000000000
+        <= 41044d7509b2ddb7179364109b16ea95c8282ff05c6866ae760b22eca20b8e66dc9ab32d17a73231de3bbb46696084155f8a7f6be29408a70fc3103112cefccc4ce328333134393746343930323933434635613435343062383163394635393931304636323531396236337968ee36e0b6d94da4551bac811e7816115d4ebb9e15a6f4068bbc29736d45769000
+        => e00200010d038000002c8000003c80000000
+        <= 4104d54226ceac221f494aa1888252f47220e9d4cf0ddc11a651433bcad6364ee2af9862e1c78d56331267a95c660b182ea47e8dd0cedb231a2a1de59e8c3031bf222863643137353661664437334531663937423166393266334633614131303532456334374235333532f34046e410a060091825436065aa12e074c6c8f348e3528578e902777789d0b59000
+      `);
+
+      const transport = createTransportReplayer(store);
+      const wallet = new LedgerWallet(await transport.create());
+
+      await expect(wallet.getAddresses({ path: DEFAULT_ETH, limit: 5 })).resolves.toStrictEqual([
+        {
+          address: '0xc6D5a3c98EC9073B54FA0969957Bd582e8D874bf',
+          dPath: "m/44'/60'/0'/0/0",
+          index: 0
+        },
+        {
+          address: '0x59A897A2dbd55D20bCC9B52d5eaA14E2859Dc467',
+          dPath: "m/44'/60'/0'/0/1",
+          index: 1
+        },
+        {
+          address: '0x7D5e716Bbc8771af9c5ec3b0555B48a4a84d4ba7',
+          dPath: "m/44'/60'/0'/0/2",
+          index: 2
+        },
+        {
+          address: '0x8137eC5954A8ed45A90F3bd58f717228b5670858',
+          dPath: "m/44'/60'/0'/0/3",
+          index: 3
+        },
+        {
+          address: '0xc0C386F7f0B02FAC0d63B2de00a01e77992B011B',
+          dPath: "m/44'/60'/0'/0/4",
+          index: 4
+        }
+      ]);
+    });
+
+    it('fetches multiple addresses for a hardened derivation path', async () => {
+      const store = RecordStore.fromString(`
+        => e002000015058000002c8000003c800000000000000000000000
+        <= 4104b884d0c53b60fb8aafba20ca84870f20428082863f1d39a402c36c2de356cb0c6c0a582f54ee29911ca6f1823d34405623f4a7418db8ebb0203bc3acba08ba6428633644356133633938454339303733423534464130393639393537426435383265384438373462669000
+        => e002000015058000002c8000003c800000010000000000000000
+        <= 4104ecc55657c13ddfb60cd03a6787bfd524cc960570d7a84f987126f337c1c7cf0eeda2877ce13ee570bbe32ef47c603feb8acf63c4ff350e98f0251bdabfcf76dc28334645373033613230333543423335393043383635613039463535366544646130326232436631329000
+        => e002000015058000002c8000003c800000020000000000000000
+        <= 4104a88fc1f397adf7f335401343f74ed36b82b9bd2d4080880fe83af074547c61c664ee7bf1c17054be3a3d30d777d66cb502a83e56a2fff9cc4bbab529f0c9a19928323135396134313443344163303830343832434536463934326363354243353933303661314134379000
+        => e002000015058000002c8000003c800000030000000000000000
+        <= 4104fd234593caaafd164e8d6d4f5f3ce2c37af8e3919b0f3d2eb2dd454313fe5da10aec9d12cebec71ddda1bfc1cde734cba7658ca9f89ebeeba41eccf2d7fae5ea28426465633334343831383239633233393646413135624163353232374430423035634633446334319000
+        => e002000015058000002c8000003c800000040000000000000000
+        <= 410474c0c80b86d0d50da9607401c43420928f2feb829b6c3e569a6fabbf5bba9a17903666aca0fd26c541bbeeae6ac2271848e3739db35fd926eab5a535b8c8387528393165323833314135324534656545326566613842303542306244304339333034303734393544439000
+      `);
+
+      const transport = createTransportReplayer(store);
+      const wallet = new LedgerWallet(await transport.create());
+
+      await expect(wallet.getAddresses({ path: LEDGER_LIVE_ETH, limit: 5 })).resolves.toStrictEqual(
+        [
+          {
+            address: '0xc6D5a3c98EC9073B54FA0969957Bd582e8D874bf',
+            dPath: "m/44'/60'/0'/0/0",
+            index: 0
+          },
+          {
+            address: '0x3FE703a2035CB3590C865a09F556eDda02b2Cf12',
+            dPath: "m/44'/60'/1'/0/0",
+            index: 1
+          },
+          {
+            address: '0x2159a414C4Ac080482CE6F942cc5BC59306a1A47',
+            dPath: "m/44'/60'/2'/0/0",
+            index: 2
+          },
+          {
+            address: '0xBdec34481829c2396FA15bAc5227D0B05cF3Dc41',
+            dPath: "m/44'/60'/3'/0/0",
+            index: 3
+          },
+          {
+            address: '0x91e2831A52E4eeE2efa8B05B0bD0C930407495DC',
+            dPath: "m/44'/60'/4'/0/0",
+            index: 4
+          }
+        ]
+      );
+    });
+  });
+
   describe('getExtendedKey', () => {
     it('fetches a public key and chaincode from the device', async () => {
       const store = RecordStore.fromString(`

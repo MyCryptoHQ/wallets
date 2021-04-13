@@ -22,24 +22,22 @@ export abstract class DeterministicWallet {
     offset?: number;
   }) {
     if (path.isHardened) {
-      return Promise.all(
-        new Array(limit).fill(undefined).map(async (_, index) => {
-          const i = offset + index;
-          const dPath = getFullPath(path, i);
-          const address = await this.getHardenedAddress(path, offset + index);
-          return { address, dPath, index: i };
-        })
-      );
+      return new Array(limit).fill(undefined).reduce(async (promise, _, index) => {
+        const array = await promise;
+
+        const i = offset + index;
+        const dPath = getFullPath(path, i);
+        const address = await this.getHardenedAddress(path, offset + index);
+        return [...array, { address, dPath, index: i }];
+      }, Promise.resolve([]));
     }
 
     const masterNode = await this.getHDNode(path);
-    return Promise.all(
-      new Array(limit).fill(undefined).map((_, index) => {
-        const i = offset + index;
-        const dPath = getFullPath(path, i);
-        const node = masterNode.derivePath(i.toString(10));
-        return { address: toChecksumAddress(node.address), index: i, dPath };
-      })
-    );
+    return new Array(limit).fill(undefined).map((_, index) => {
+      const i = offset + index;
+      const dPath = getFullPath(path, i);
+      const node = masterNode.derivePath(i.toString(10));
+      return { address: toChecksumAddress(node.address), index: i, dPath };
+    });
   }
 }
