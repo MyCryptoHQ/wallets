@@ -1,3 +1,5 @@
+import TrezorConnect from 'trezor-connect';
+
 import { DEFAULT_ETH, LEDGER_LIVE_ETH } from '@dpaths';
 import { fSignedTx, fTransactionRequest } from '@fixtures';
 import { getFullPath } from '@utils';
@@ -12,6 +14,34 @@ describe('TrezorWalletInstance', () => {
 
       await expect(instance.signTransaction(fTransactionRequest)).resolves.toBe(fSignedTx);
     });
+
+    it('throws if the call to TrezorConnect fails', async () => {
+      (TrezorConnect.ethereumSignTransaction as jest.MockedFunction<
+        typeof TrezorConnect.ethereumSignTransaction
+      >).mockImplementation(async () => ({
+        success: false,
+        payload: {
+          error: 'foo bar'
+        }
+      }));
+
+      const wallet = new TrezorWallet();
+      const instance = await wallet.getWallet(DEFAULT_ETH, 0);
+
+      await expect(instance.signTransaction(fTransactionRequest)).rejects.toThrow('foo bar');
+    });
+
+    it('throws if the chain ID or nonce is undefined', async () => {
+      const wallet = new TrezorWallet();
+      const instance = await wallet.getWallet(DEFAULT_ETH, 0);
+
+      await expect(
+        instance.signTransaction({ ...fTransactionRequest, nonce: undefined })
+      ).rejects.toThrow();
+      await expect(
+        instance.signTransaction({ ...fTransactionRequest, chainId: undefined })
+      ).rejects.toThrow();
+    });
   });
 
   describe('getAddress', () => {
@@ -22,6 +52,22 @@ describe('TrezorWalletInstance', () => {
       await expect(instance.getAddress()).resolves.toBe(
         '0xc6D5a3c98EC9073B54FA0969957Bd582e8D874bf'
       );
+    });
+
+    it('throws if the call to TrezorConnect fails', async () => {
+      (TrezorConnect.ethereumGetAddress as jest.MockedFunction<
+        typeof TrezorConnect.ethereumGetAddress
+      >).mockImplementation(async () => ({
+        success: false,
+        payload: {
+          error: 'foo bar'
+        }
+      }));
+
+      const wallet = new TrezorWallet();
+      const instance = await wallet.getWallet(DEFAULT_ETH, 0);
+
+      await expect(instance.getAddress()).rejects.toThrow('foo bar');
     });
   });
 
@@ -59,6 +105,20 @@ describe('TrezorWallet', () => {
       await expect(wallet.getHardenedAddress(LEDGER_LIVE_ETH, 1)).resolves.toBe(
         '0x3FE703a2035CB3590C865a09F556eDda02b2Cf12'
       );
+    });
+
+    it('throws if the call to TrezorConnect fails', async () => {
+      (TrezorConnect.ethereumGetAddress as jest.MockedFunction<
+        typeof TrezorConnect.ethereumGetAddress
+      >).mockImplementation(async () => ({
+        success: false,
+        payload: {
+          error: 'foo bar'
+        }
+      }));
+
+      const wallet = new TrezorWallet();
+      await expect(wallet.getHardenedAddress(LEDGER_LIVE_ETH, 0)).rejects.toThrow('foo bar');
     });
   });
 
@@ -144,6 +204,20 @@ describe('TrezorWallet', () => {
         publicKey:
           '0x04b21938e18aec1e2e7478988ccae5b556597d771c8e46ac2c8ea2a4a1a80619679230a109cd30e8af15856b15799e38991e45e55f406a8a24d5605ba0757da53c'
       });
+    });
+
+    it('throws if the call to TrezorConnect fails', async () => {
+      (TrezorConnect.getPublicKey as jest.MockedFunction<
+        typeof TrezorConnect.getPublicKey
+      >).mockImplementation(async () => ({
+        success: false,
+        payload: {
+          error: 'foo bar'
+        }
+      }));
+
+      const wallet = new TrezorWallet();
+      await expect(wallet.getExtendedKey(getFullPath(DEFAULT_ETH, 0))).rejects.toThrow('foo bar');
     });
   });
 

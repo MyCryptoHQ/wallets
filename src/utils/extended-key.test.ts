@@ -1,4 +1,4 @@
-import { createExtendedPublicKey } from '@utils/extended-key';
+import { createExtendedPublicKey, getSegmentNumber } from '@utils/extended-key';
 
 describe('createExtendedPublicKey', () => {
   it('calculates an extended public key', () => {
@@ -15,5 +15,16 @@ describe('createExtendedPublicKey', () => {
     expect(createExtendedPublicKey("m/44'/60'/0'/0", parentKey, childKey)).toBe(
       'xpub6DreGKvTo5gf1tXu5N86sz922cFfACvEj8oUrL1nJAbngaMriFQDYk3vA1vpXXGyD5MtH2tbQ8JJScFki5TNSJtRF9T2Qq6ZNLSDhRk2bqc'
     );
+  });
+});
+
+describe('getSegmentNumber', () => {
+  it('returns the segment number for a derivation path', () => {
+    expect(getSegmentNumber('123')).toBe(123);
+    expect(getSegmentNumber('123\'')).toBe(0x80000000 + 123);
+  });
+
+  it('throws for invalid segments', () => {
+    expect(() => getSegmentNumber('foo')).toThrow();
   });
 });
