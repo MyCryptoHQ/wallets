@@ -91,5 +91,8 @@
     "*.{js,jsx,ts,tsx,json,md}": [
       "prettier --write"
     ]
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
