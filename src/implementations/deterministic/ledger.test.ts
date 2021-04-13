@@ -1,4 +1,8 @@
 import { createTransportReplayer, RecordStore } from '@ledgerhq/hw-transport-mocker';
+import TransportNodeHid from '@ledgerhq/hw-transport-node-hid-noevents';
+import TransportU2F from '@ledgerhq/hw-transport-u2f';
+import TransportWebHID from '@ledgerhq/hw-transport-webhid';
+import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 
 import { DEFAULT_ETH, LEDGER_LIVE_ETH } from '@dpaths';
 import { LedgerWallet, LedgerWalletInstance } from '@implementations/deterministic/ledger';
@@ -269,6 +273,64 @@ describe('LedgerWallet', () => {
 
       expect(instance).toBeInstanceOf(LedgerWalletInstance);
       expect(await instance.getAddress()).toBe('0xc6D5a3c98EC9073B54FA0969957Bd582e8D874bf');
+    });
+  });
+
+  describe('getTransport', () => {
+    it('uses TransportNodeHid when available', async () => {
+      const store = RecordStore.fromString(`
+      => e002000015058000002c8000003c800000000000000000000000
+      <= 4104b884d0c53b60fb8aafba20ca84870f20428082863f1d39a402c36c2de356cb0c6c0a582f54ee29911ca6f1823d34405623f4a7418db8ebb0203bc3acba08ba6428633644356133633938454339303733423534464130393639393537426435383265384438373462669000
+    `);
+
+      const transport = createTransportReplayer(store);
+      TransportNodeHid.isSupported = jest.fn().mockReturnValueOnce(true);
+      TransportNodeHid.create = jest.fn().mockImplementation(() => transport.create());
+      const wallet = await new LedgerWallet().getWallet(DEFAULT_ETH, 0);
+      expect(await wallet.getAddress()).toBe('0xc6D5a3c98EC9073B54FA0969957Bd582e8D874bf');
+      expect(TransportNodeHid.create).toHaveBeenCalled();
+    });
+
+    it('uses TransportWebHID when available', async () => {
+      const store = RecordStore.fromString(`
+      => e002000015058000002c8000003c800000000000000000000000
+      <= 4104b884d0c53b60fb8aafba20ca84870f20428082863f1d39a402c36c2de356cb0c6c0a582f54ee29911ca6f1823d34405623f4a7418db8ebb0203bc3acba08ba6428633644356133633938454339303733423534464130393639393537426435383265384438373462669000
+    `);
+
+      const transport = createTransportReplayer(store);
+      TransportWebHID.isSupported = jest.fn().mockReturnValueOnce(true);
+      TransportWebHID.create = jest.fn().mockImplementation(() => transport.create());
+      const wallet = await new LedgerWallet().getWallet(DEFAULT_ETH, 0);
+      expect(await wallet.getAddress()).toBe('0xc6D5a3c98EC9073B54FA0969957Bd582e8D874bf');
+      expect(TransportWebHID.create).toHaveBeenCalled();
+    });
+
+    it('uses TransportWebUSB when available', async () => {
+      const store = RecordStore.fromString(`
+      => e002000015058000002c8000003c800000000000000000000000
+      <= 4104b884d0c53b60fb8aafba20ca84870f20428082863f1d39a402c36c2de356cb0c6c0a582f54ee29911ca6f1823d34405623f4a7418db8ebb0203bc3acba08ba6428633644356133633938454339303733423534464130393639393537426435383265384438373462669000
+    `);
+
+      const transport = createTransportReplayer(store);
+      TransportWebUSB.isSupported = jest.fn().mockReturnValueOnce(true);
+      TransportWebUSB.create = jest.fn().mockImplementation(() => transport.create());
+      const wallet = await new LedgerWallet().getWallet(DEFAULT_ETH, 0);
+      expect(await wallet.getAddress()).toBe('0xc6D5a3c98EC9073B54FA0969957Bd582e8D874bf');
+      expect(TransportWebUSB.create).toHaveBeenCalled();
+    });
+
+    it('uses TransportU2F when available', async () => {
+      const store = RecordStore.fromString(`
+      => e002000015058000002c8000003c800000000000000000000000
+      <= 4104b884d0c53b60fb8aafba20ca84870f20428082863f1d39a402c36c2de356cb0c6c0a582f54ee29911ca6f1823d34405623f4a7418db8ebb0203bc3acba08ba6428633644356133633938454339303733423534464130393639393537426435383265384438373462669000
+    `);
+
+      const transport = createTransportReplayer(store);
+      TransportU2F.isSupported = jest.fn().mockReturnValueOnce(true);
+      TransportU2F.create = jest.fn().mockImplementation(() => transport.create());
+      const wallet = await new LedgerWallet().getWallet(DEFAULT_ETH, 0);
+      expect(await wallet.getAddress()).toBe('0xc6D5a3c98EC9073B54FA0969957Bd582e8D874bf');
+      expect(TransportU2F.create).toHaveBeenCalled();
     });
   });
 });
