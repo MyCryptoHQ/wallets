@@ -4,7 +4,7 @@ import { DEFAULT_ETH, LEDGER_LIVE_ETH } from '@dpaths';
 import { LedgerWallet, LedgerWalletInstance } from '@implementations/deterministic/ledger';
 import { getFullPath } from '@utils';
 
-import { fSignedTx, fTransactionRequest } from '../../../.jest/__fixtures__';
+import { fSignedTokenTx, fSignedTx, fTransactionRequest } from '../../../.jest/__fixtures__';
 
 // To record a test, use a Ledger device initialised with the mnemonic phrase "test test test test test test test test
 // test test test ball," and use the following code:
@@ -28,7 +28,6 @@ describe('LedgerWalletInstance', () => {
 
       const transport = createTransportReplayer(store);
       const wallet = new LedgerWallet(await transport.create());
-
       const instance = await wallet.getWallet(DEFAULT_ETH, 0);
 
       await expect(instance.signTransaction(fTransactionRequest)).resolves.toBe(fSignedTx);
@@ -39,12 +38,11 @@ describe('LedgerWalletInstance', () => {
         => e00a000066035a5258e41d2489571d322189246dafa5ebde1f4699f4980000001200000001304402200ae8634c22762a8ba41d2acb1e068dcce947337c6dd984f13b820d396176952302203306a49d8a6c35b11a61088e1570b3928ca3a0db6bd36f577b5ef87628561ff7
         <= 9000
         => e004000041058000002c8000003c800000000000000000000000eb0685012a05f20082520894e41d2489571d322189246dafa5ebde1f4699f498872386f26fc1000080018080
-        <= 2975b96c4423ea79037099e0f8a0fa7d8538f00c6aaddea26e151320aac65ae3bd5266d81476adedc28c5e769f8bf016de33bdaa49f341435df429e01fe5f9b16e9000
+        <= 2686fdf8b0c4ba7e59b93f0a81a9d5083835caf56b17aac3fe251f276a10ef33d44ec0c25116937acdec4617182127d9f6a9431e837412babd150331d00d5e0ae99000
       `);
 
       const transport = createTransportReplayer(store);
       const wallet = new LedgerWallet(await transport.create());
-
       const instance = await wallet.getWallet(DEFAULT_ETH, 0);
 
       await expect(
@@ -53,7 +51,7 @@ describe('LedgerWalletInstance', () => {
           to: '0xe41d2489571d322189246dafa5ebde1f4699f498',
           chainId: 1
         })
-      ).resolves.toBe(fSignedTx);
+      ).resolves.toBe(fSignedTokenTx);
     });
 
     it('throws on missing chain id', async () => {
