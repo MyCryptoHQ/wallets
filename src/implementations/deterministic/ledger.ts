@@ -58,6 +58,8 @@ export class LedgerWalletInstance implements Wallet {
 }
 
 export class LedgerWallet extends HardwareWallet {
+  private app?: EthereumApp<unknown>;
+
   constructor(private readonly transport?: Transport) {
     super();
   }
@@ -88,8 +90,11 @@ export class LedgerWallet extends HardwareWallet {
   }
 
   protected async getApp(): Promise<EthereumApp<unknown>> {
-    const transport = this.transport ?? (await this.getTransport());
-    return new EthereumApp(transport);
+    if (!this.app) {
+      const transport = this.transport ?? (await this.getTransport());
+      this.app = new EthereumApp(transport);
+    }
+    return this.app;
   }
 
   protected async getTransport(): Promise<Transport> {
