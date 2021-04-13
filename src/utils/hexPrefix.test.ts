@@ -1,4 +1,4 @@
-import { addHexPrefix, stripHexPrefix } from '@utils';
+import { addHexPrefix, stripHexPrefix } from './hexPrefix';
 
 describe('addHexPrefix', () => {
   it('adds hex prefix to regular string', () => {

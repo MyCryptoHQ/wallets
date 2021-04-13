@@ -1,6 +1,6 @@
 import type { TransactionRequest } from '@ethersproject/abstract-provider';
 
-import type { TAddress } from '@types';
+import type { TAddress } from './types';
 
 export interface Wallet {
   signTransaction(transaction: TransactionRequest): Promise<string>;

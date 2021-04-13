@@ -9,11 +9,10 @@ import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 
-import type { DerivationPath } from '@dpaths';
-import type { ExtendedKey, TAddress } from '@types';
-import { addHexPrefix, getFullPath, sanitizeTx, stripHexPrefix } from '@utils';
-import type { Wallet } from '@wallet';
-
+import type { DerivationPath } from '../../dpaths';
+import type { ExtendedKey, TAddress } from '../../types';
+import { addHexPrefix, getFullPath, sanitizeTx, stripHexPrefix } from '../../utils';
+import type { Wallet } from '../../wallet';
 import { HardwareWallet } from './hardware-wallet';
 
 export class LedgerWalletInstance implements Wallet {

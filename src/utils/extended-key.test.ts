@@ -1,4 +1,4 @@
-import { createExtendedPublicKey, getSegmentNumber } from '@utils/extended-key';
+import { createExtendedPublicKey, getSegmentNumber } from './extended-key';
 
 describe('createExtendedPublicKey', () => {
   it('calculates an extended public key', () => {

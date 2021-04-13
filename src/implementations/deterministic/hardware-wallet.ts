@@ -1,9 +1,9 @@
 import { HDNode } from '@ethersproject/hdnode';
 
-import { DeterministicWallet } from '@deterministic-wallet';
-import type { DerivationPath } from '@dpaths';
-import type { ExtendedKey } from '@types';
-import { getPathPrefix, createExtendedPublicKey } from '@utils';
+import { DeterministicWallet } from '../../deterministic-wallet';
+import type { DerivationPath } from '../../dpaths';
+import type { ExtendedKey } from '../../types';
+import { getPathPrefix, createExtendedPublicKey } from '../../utils';
 
 export abstract class HardwareWallet extends DeterministicWallet {
   abstract getExtendedKey(path: string): Promise<ExtendedKey>;

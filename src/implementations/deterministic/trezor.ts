@@ -4,11 +4,10 @@ import { serialize as serializeTransaction } from '@ethersproject/transactions';
 import type { EthereumTransaction } from 'trezor-connect';
 import TrezorConnect from 'trezor-connect';
 
-import type { DerivationPath } from '@dpaths';
-import type { TAddress } from '@types';
-import { addHexPrefix, getFullPath, sanitizeTx } from '@utils';
-import type { Wallet } from '@wallet';
-
+import type { DerivationPath } from '../../dpaths';
+import type { TAddress } from '../../types';
+import { addHexPrefix, getFullPath, sanitizeTx } from '../../utils';
+import type { Wallet } from '../../wallet';
 import { HardwareWallet } from './hardware-wallet';
 
 export class TrezorWalletInstance implements Wallet {

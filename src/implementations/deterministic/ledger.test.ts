@@ -4,11 +4,10 @@ import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 
-import { DEFAULT_ETH, LEDGER_LIVE_ETH } from '@dpaths';
-import { LedgerWallet, LedgerWalletInstance } from '@implementations/deterministic/ledger';
-import { getFullPath } from '@utils';
-
 import { fSignedTokenTx, fSignedTx, fTransactionRequest } from '../../../.jest/__fixtures__';
+import { DEFAULT_ETH, LEDGER_LIVE_ETH } from '../../dpaths';
+import { getFullPath } from '../../utils';
+import { LedgerWallet, LedgerWalletInstance } from './ledger';
 
 // To record a test, use a Ledger device initialised with the mnemonic phrase "test test test test test test test test
 // test test test ball," and use the following code:

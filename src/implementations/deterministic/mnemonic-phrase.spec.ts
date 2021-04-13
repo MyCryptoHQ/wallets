@@ -1,4 +1,3 @@
-import { DEFAULT_ETH, LEDGER_LIVE_ETH } from '@dpaths';
 import {
   fAddress,
   fHardenedAddress,
@@ -6,8 +5,8 @@ import {
   fPrivateKey,
   fSignedTx,
   fTransactionRequest
-} from '@fixtures';
-
+} from '../../../.jest/__fixtures__';
+import { DEFAULT_ETH, LEDGER_LIVE_ETH } from '../../dpaths';
 import { MnemonicPhrase } from './mnemonic-phrase';
 
 jest.mock('crypto', () => ({

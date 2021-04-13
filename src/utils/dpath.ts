@@ -1,4 +1,4 @@
-import type { DerivationPath } from '@dpaths';
+import type { DerivationPath } from '../dpaths';
 
 export const getFullPath = (path: DerivationPath, index: number): string =>
   path.path.replace('<account>', index.toString(10));

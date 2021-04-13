@@ -1,13 +1,13 @@
-import { MNEMONIC_ENTROPY_BYTES } from '@config';
 import { entropyToMnemonic, HDNode } from '@ethersproject/hdnode';
 import crypto from 'crypto';
 
-import { DeterministicWallet } from '@deterministic-wallet';
-import type { DerivationPath } from '@dpaths';
-import { PrivateKey } from '@implementations/non-deterministic/private-key';
-import type { TAddress } from '@types';
-import { getFullPath, getPathPrefix, toChecksumAddress } from '@utils';
-import type { Wallet } from '@wallet';
+import { MNEMONIC_ENTROPY_BYTES } from '../../config';
+import { DeterministicWallet } from '../../deterministic-wallet';
+import type { DerivationPath } from '../../dpaths';
+import type { TAddress } from '../../types';
+import { getFullPath, getPathPrefix, toChecksumAddress } from '../../utils';
+import type { Wallet } from '../../wallet';
+import { PrivateKey } from '../non-deterministic';
 
 export class MnemonicPhrase extends DeterministicWallet {
   constructor(readonly mnemonicPhrase: string, readonly passphrase?: string) {

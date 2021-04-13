@@ -1,9 +1,8 @@
 import TrezorConnect from 'trezor-connect';
 
-import { DEFAULT_ETH, LEDGER_LIVE_ETH } from '@dpaths';
-import { fSignedTx, fTransactionRequest } from '@fixtures';
-import { getFullPath } from '@utils';
-
+import { fSignedTx, fTransactionRequest } from '../../../.jest/__fixtures__';
+import { DEFAULT_ETH, LEDGER_LIVE_ETH } from '../../dpaths';
+import { getFullPath } from '../../utils';
 import { TrezorWallet, TrezorWalletInstance } from './trezor';
 
 describe('TrezorWalletInstance', () => {
