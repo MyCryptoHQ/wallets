@@ -1,7 +1,7 @@
+import { DEFAULT_ETH, LEDGER_LIVE_ETH } from '@dpaths';
 import {
   fAddress,
-  fDPath,
-  fDPathRoot,
+  fHardenedAddress,
   fMnemonicPhrase,
   fPrivateKey,
   fSignedTx,
@@ -30,62 +30,85 @@ jest.mock('crypto', () => ({
       155,
       243,
       126,
-      111,
-      205,
-      249,
-      191,
-      55,
-      230,
-      252,
-      223,
-      155,
-      243,
-      126,
-      111,
-      205,
-      249,
-      191,
-      55,
-      224
+      8
     ])
 }));
 
 describe('Mnemonic Phrase', () => {
   it('derives addresses correctly', async () => {
     return expect(
-      new MnemonicPhrase(fMnemonicPhrase).getAddresses({ path: fDPathRoot, limit: 5 })
+      new MnemonicPhrase(fMnemonicPhrase).getAddresses({ path: DEFAULT_ETH, limit: 5 })
     ).resolves.toStrictEqual([
       {
-        address: '0x0961Ca10D49B9B8e371aA0Bcf77fE5730b18f2E4',
+        address: '0xc6D5a3c98EC9073B54FA0969957Bd582e8D874bf',
         dPath: "m/44'/60'/0'/0/0",
         index: 0
       },
       {
-        address: '0xa34F236d4Ead4D668b9335891f1BC4011A92B2CD',
+        address: '0x59A897A2dbd55D20bCC9B52d5eaA14E2859Dc467',
         dPath: "m/44'/60'/0'/0/1",
         index: 1
       },
       {
-        address: '0x5e147f4A4224428c2978dca3A95aee7625FDB3Fd',
+        address: '0x7D5e716Bbc8771af9c5ec3b0555B48a4a84d4ba7',
         dPath: "m/44'/60'/0'/0/2",
         index: 2
       },
       {
-        address: '0xeD10e0cB77695784999ec89dDdf8504475b78ef0',
+        address: '0x8137eC5954A8ed45A90F3bd58f717228b5670858',
         dPath: "m/44'/60'/0'/0/3",
         index: 3
       },
       {
-        address: '0xF2919D8C1a771945cC0d38a42255e7228B8089fd',
+        address: '0xc0C386F7f0B02FAC0d63B2de00a01e77992B011B',
         dPath: "m/44'/60'/0'/0/4",
         index: 4
       }
     ]);
   });
+
+  it('derives hardened addresses correctly', async () => {
+    return expect(
+      new MnemonicPhrase(fMnemonicPhrase).getAddresses({ path: LEDGER_LIVE_ETH, limit: 5 })
+    ).resolves.toStrictEqual([
+      {
+        address: '0xc6D5a3c98EC9073B54FA0969957Bd582e8D874bf',
+        dPath: "m/44'/60'/0'/0/0",
+        index: 0
+      },
+      {
+        address: '0x3FE703a2035CB3590C865a09F556eDda02b2Cf12',
+        dPath: "m/44'/60'/1'/0/0",
+        index: 1
+      },
+      {
+        address: '0x2159a414C4Ac080482CE6F942cc5BC59306a1A47',
+        dPath: "m/44'/60'/2'/0/0",
+        index: 2
+      },
+      {
+        address: '0xBdec34481829c2396FA15bAc5227D0B05cF3Dc41',
+        dPath: "m/44'/60'/3'/0/0",
+        index: 3
+      },
+      {
+        address: '0x91e2831A52E4eeE2efa8B05B0bD0C930407495DC',
+        dPath: "m/44'/60'/4'/0/0",
+        index: 4
+      }
+    ]);
+  });
+
   it('derives address correctly', async () => {
-    return expect(new MnemonicPhrase(fMnemonicPhrase).getAddress(fDPath)).resolves.toEqual(
+    return expect(new MnemonicPhrase(fMnemonicPhrase).getAddress(DEFAULT_ETH, 0)).resolves.toEqual(
       fAddress
     );
+  });
+
+  it('derives hardened address correctly', async () => {
+    return expect(
+      new MnemonicPhrase(fMnemonicPhrase).getAddress(LEDGER_LIVE_ETH, 1)
+    ).resolves.toEqual(fHardenedAddress);
   });
 
   it('creates mnemonic correctly', async () => {
@@ -94,17 +117,17 @@ describe('Mnemonic Phrase', () => {
   });
 
   it('wallet signs transaction correctly', async () => {
-    const wallet = await new MnemonicPhrase(fMnemonicPhrase).getWallet(fDPath);
+    const wallet = await new MnemonicPhrase(fMnemonicPhrase).getWallet(DEFAULT_ETH, 0);
     return expect(wallet.signTransaction(fTransactionRequest)).resolves.toBe(fSignedTx);
   });
 
   it('wallet derives address correctly', async () => {
-    const wallet = await new MnemonicPhrase(fMnemonicPhrase).getWallet(fDPath);
+    const wallet = await new MnemonicPhrase(fMnemonicPhrase).getWallet(DEFAULT_ETH, 0);
     return expect(wallet.getAddress()).resolves.toBe(fAddress);
   });
 
   it('wallet returns its private key correctly', async () => {
-    const wallet = await new MnemonicPhrase(fMnemonicPhrase).getWallet(fDPath);
+    const wallet = await new MnemonicPhrase(fMnemonicPhrase).getWallet(DEFAULT_ETH, 0);
     return expect(wallet.getPrivateKey()).resolves.toBe(fPrivateKey);
   });
 });

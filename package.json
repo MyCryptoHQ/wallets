@@ -23,27 +23,44 @@
     "test": "jest",
     "lint": "yarn run lint:types && yarn run lint:source && yarn run lint:format",
     "lint:types": "tsc --noEmit",
-    "lint:source": "eslint . --ignore-path .gitignore --ext .ts,.tsx,.js,.jsx,.mdx",
-    "lint:format": "prettier --check --ignore-path .gitignore \"**/*.{ts,tsx,js,json,yml,mdx}\"",
-    "format": "prettier --write --ignore-path .gitignore \"**/*.{ts,tsx,js,json,yml,mdx}\"",
+    "lint:source": "eslint . --ignore-path .gitignore --ext .ts,.tsx,.js,.jsx",
+    "lint:format": "prettier --check --ignore-path .gitignore \"**/*.{ts,tsx,js,json,yml}\"",
+    "format": "prettier --write --ignore-path .gitignore \"**/*.{ts,tsx,js,json,yml}\"",
     "prepare": "simple-git-hooks",
     "prepack": "yarn build"
   },
   "dependencies": {
     "@ethersproject/abstract-provider": "5.1.0",
     "@ethersproject/address": "5.1.0",
+    "@ethersproject/basex": "5.1.0",
+    "@ethersproject/bytes": "5.1.0",
     "@ethersproject/hdnode": "5.1.0",
     "@ethersproject/json-wallets": "5.1.0",
+    "@ethersproject/sha2": "5.1.0",
+    "@ethersproject/signing-key": "5.1.0",
+    "@ethersproject/transactions": "5.1.0",
     "@ethersproject/wallet": "5.1.0",
+    "@ledgerhq/hw-app-eth": "5.48.0",
+    "@ledgerhq/hw-transport": "5.48.0",
+    "@ledgerhq/hw-transport-node-hid": "5.49.0",
+    "@ledgerhq/hw-transport-node-hid-noevents": "5.49.0",
+    "@ledgerhq/hw-transport-u2f": "5.36.0-deprecated",
+    "@ledgerhq/hw-transport-webhid": "5.49.0",
+    "@ledgerhq/hw-transport-webusb": "5.48.0",
     "ethereumjs-wallet": "1.0.1",
-    "superstruct": "0.15.1"
+    "superstruct": "0.15.1",
+    "trezor-connect": "8.1.25"
   },
   "devDependencies": {
     "@babel/cli": "^7.13.14",
     "@babel/core": "^7.13.14",
     "@babel/preset-env": "^7.13.12",
     "@babel/preset-typescript": "^7.13.0",
+    "@ledgerhq/hw-transport-mocker": "5.49.0",
     "@types/jest": "^26.0.22",
+    "@types/ledgerhq__hw-transport": "4.21.3",
+    "@types/ledgerhq__hw-transport-u2f": "4.21.2",
+    "@types/ledgerhq__hw-transport-webusb": "4.70.1",
     "@typescript-eslint/eslint-plugin": "^4.18.0",
     "@typescript-eslint/parser": "^4.18.0",
     "babel-jest": "^26.6.3",
@@ -68,10 +85,10 @@
     "pre-push": "yarn test"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx,mdx}": [
+    "*.{js,jsx,ts,tsx}": [
       "eslint --fix"
     ],
-    "*.{js,jsx,ts,tsx,json,md,mdx}": [
+    "*.{js,jsx,ts,tsx,json,md}": [
       "prettier --write"
     ]
   }
