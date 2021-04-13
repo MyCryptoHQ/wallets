@@ -1,9 +1,8 @@
 import type { HDNode } from '@ethersproject/hdnode';
 
-import type { DerivationPath } from '@dpaths';
-import type { TAddress } from '@types';
-import { getFullPath, toChecksumAddress } from '@utils';
-
+import type { DerivationPath } from './dpaths';
+import type { TAddress } from './types';
+import { getFullPath, toChecksumAddress } from './utils';
 import type { Wallet } from './wallet';
 
 export abstract class DeterministicWallet {

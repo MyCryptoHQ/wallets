@@ -5,8 +5,8 @@ import { parse } from '@ethersproject/transactions';
 import { Wallet } from '@ethersproject/wallet';
 import type { EthereumTransaction } from 'trezor-connect';
 
-import { fMnemonicPhrase } from '@fixtures';
-import { addHexPrefix } from '@utils';
+import { fMnemonicPhrase } from '../../../../.jest/__fixtures__';
+import { addHexPrefix } from '../../../utils';
 
 const hdNode = HDNode.fromMnemonic(fMnemonicPhrase);
 

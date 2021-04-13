@@ -2,8 +2,7 @@
  * @jest-environment node
  */
 
-import { fKeystoreVectors } from '@fixtures';
-
+import { fKeystoreVectors } from '../../../.jest/__fixtures__';
 import { Keystore } from './keystore';
 
 describe('Keystore', () => {

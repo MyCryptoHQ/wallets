@@ -1,11 +1,11 @@
-import { ETHEREUM_P2PKH, HARDENED_PREFIX } from '@config';
 import { Base58 } from '@ethersproject/basex';
 import { concat, hexDataSlice, hexlify, hexZeroPad } from '@ethersproject/bytes';
 import { ripemd160, sha256 } from '@ethersproject/sha2';
 import { computePublicKey } from '@ethersproject/signing-key';
 
-import type { ExtendedKey } from '@types';
-import { addHexPrefix } from '@utils/hexPrefix';
+import { ETHEREUM_P2PKH, HARDENED_PREFIX } from '../config';
+import type { ExtendedKey } from '../types';
+import { addHexPrefix } from './hexPrefix';
 
 export const createExtendedPublicKey = (
   childDerivationPath: string,

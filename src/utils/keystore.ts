@@ -11,7 +11,7 @@ import {
   union
 } from 'superstruct';
 
-import { safeJSONParse } from '@utils';
+import { safeJSONParse } from './json';
 
 export enum KeystoreType {
   PRESALE_BKP = 'PRESALE_BKP',

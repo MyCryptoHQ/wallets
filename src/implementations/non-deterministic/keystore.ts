@@ -1,8 +1,7 @@
 import { decryptJsonWalletSync } from '@ethersproject/json-wallets';
 import Wallet, { thirdparty } from 'ethereumjs-wallet';
 
-import { addHexPrefix, getKeystoreType, KeystoreType } from '@utils';
-
+import { addHexPrefix, getKeystoreType, KeystoreType } from '../../utils';
 import { PrivateKey } from './private-key';
 
 export class Keystore extends PrivateKey {

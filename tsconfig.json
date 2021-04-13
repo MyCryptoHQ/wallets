@@ -15,11 +15,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "skipLibCheck": true,
-    "resolveJsonModule": true,
-    "paths": {
-      "@fixtures": ["../.jest/__fixtures__"],
-      "@*": ["./*"]
-    }
+    "resolveJsonModule": true
   },
   "include": ["src"]
 }

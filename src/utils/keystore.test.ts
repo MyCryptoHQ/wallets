@@ -1,5 +1,5 @@
-import { fKeystoreVectors } from '@fixtures';
-import { getKeystoreType, KeystoreType } from '@utils/keystore';
+import { fKeystoreVectors } from '../../.jest/__fixtures__';
+import { getKeystoreType, KeystoreType } from './keystore';
 
 describe('getKeystoreType', () => {
   it('returns the type of keystore', () => {

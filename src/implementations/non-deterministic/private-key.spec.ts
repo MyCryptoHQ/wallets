@@ -1,5 +1,4 @@
-import { fAddress, fPrivateKey, fSignedTx, fTransactionRequest } from '@fixtures';
-
+import { fAddress, fPrivateKey, fSignedTx, fTransactionRequest } from '../../../.jest/__fixtures__';
 import { PrivateKey } from './private-key';
 
 describe('Private Key', () => {
