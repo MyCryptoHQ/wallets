@@ -4,6 +4,8 @@ import { DEFAULT_ETH, LEDGER_LIVE_ETH } from '@dpaths';
 import { LedgerWallet, LedgerWalletInstance } from '@implementations/deterministic/ledger';
 import { getFullPath } from '@utils';
 
+import { fSignedTx, fTransactionRequest } from '../../../.jest/__fixtures__';
+
 // To record a test, use a Ledger device initialised with the mnemonic phrase "test test test test test test test test
 // test test test ball," and use the following code:
 //
@@ -15,6 +17,53 @@ import { getFullPath } from '@utils';
 // await expect(wallet.getAddress(DEFAULT_ETH, 1)).resolves.toBe('0x59A897A2dbd55D20bCC9B52d5eaA14E2859Dc467');
 //
 // console.log(recordStore.toString());
+
+describe('LedgerWalletInstance', () => {
+  describe('signTransaction', () => {
+    it('signs a transaction', async () => {
+      const store = RecordStore.fromString(`
+        => e004000041058000002c8000003c800000000000000000000000eb0685012a05f20082520894b2bb2b958afa2e96dab3f3ce7162b87daea39017872386f26fc1000080038080
+        <= 2975b96c4423ea79037099e0f8a0fa7d8538f00c6aaddea26e151320aac65ae3bd5266d81476adedc28c5e769f8bf016de33bdaa49f341435df429e01fe5f9b16e9000
+      `);
+
+      const transport = createTransportReplayer(store);
+      const wallet = new LedgerWallet(await transport.create());
+
+      const instance = await wallet.getWallet(DEFAULT_ETH, 0);
+
+      await expect(instance.signTransaction(fTransactionRequest)).resolves.toBe(fSignedTx);
+    });
+  });
+
+  describe('getAddress', () => {
+    it('returns an address for the derivation path of the instance', async () => {
+      const store = RecordStore.fromString(`
+        => e002000015058000002c8000003c800000000000000000000000
+        <= 4104b884d0c53b60fb8aafba20ca84870f20428082863f1d39a402c36c2de356cb0c6c0a582f54ee29911ca6f1823d34405623f4a7418db8ebb0203bc3acba08ba6428633644356133633938454339303733423534464130393639393537426435383265384438373462669000
+      `);
+
+      const transport = createTransportReplayer(store);
+      const wallet = new LedgerWallet(await transport.create());
+      const instance = await wallet.getWallet(DEFAULT_ETH, 0);
+
+      await expect(instance.getAddress()).resolves.toBe(
+        '0xc6D5a3c98EC9073B54FA0969957Bd582e8D874bf'
+      );
+    });
+  });
+
+  describe('getPrivateKey', () => {
+    it('throws an error', async () => {
+      const store = new RecordStore();
+
+      const transport = createTransportReplayer(store);
+      const wallet = new LedgerWallet(await transport.create());
+      const instance = await wallet.getWallet(DEFAULT_ETH, 0);
+
+      await expect(() => instance.getPrivateKey()).rejects.toThrow('Method not implemented.');
+    });
+  });
+});
 
 describe('LedgerWallet', () => {
   describe('getAddress', () => {

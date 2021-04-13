@@ -56,7 +56,7 @@ export class LedgerWalletInstance implements Wallet {
     return (await this.app.getAddress(this.path, false, false)).address as TAddress;
   }
 
-  getPrivateKey(): Promise<string> {
+  async getPrivateKey(): Promise<string> {
     throw new Error('Method not implemented.');
   }
 }
