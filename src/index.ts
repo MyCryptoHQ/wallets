@@ -8,5 +8,6 @@ export {
   getPathPrefix,
   toChecksumAddress,
   stripHexPrefix,
-  addHexPrefix
+  addHexPrefix,
+  sanitizeTx
 } from './utils';
