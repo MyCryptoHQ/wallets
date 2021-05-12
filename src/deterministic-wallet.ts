@@ -11,6 +11,17 @@ export abstract class DeterministicWallet {
   abstract getWallet(path: DerivationPath, index: number): Promise<Wallet>;
   protected abstract getHDNode(path: DerivationPath): Promise<HDNode>;
 
+  /**
+   * Get the extended public key (xpub) for a specific derivation path.
+   *
+   * @param derivationPath The derivation path to get the xpub for.
+   * @return The extended public key as string.
+   */
+  async getExtendedPublicKey(derivationPath: DerivationPath): Promise<string> {
+    const node = await this.getHDNode(derivationPath);
+    return node.neuter().extendedKey;
+  }
+
   async getAddresses({
     path,
     limit,
