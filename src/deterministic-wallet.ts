@@ -1,7 +1,7 @@
 import type { HDNode } from '@ethersproject/hdnode';
 
 import type { DerivationPath } from './dpaths';
-import type { TAddress } from './types';
+import type { DeterministicAddress, TAddress } from './types';
 import { getFullPath, toChecksumAddress } from './utils';
 import type { Wallet } from './wallet';
 
@@ -30,7 +30,7 @@ export abstract class DeterministicWallet {
     path: DerivationPath;
     limit: number;
     offset?: number;
-  }) {
+  }): Promise<DeterministicAddress[]> {
     if (path.isHardened) {
       return new Array(limit).fill(undefined).reduce(async (promise, _, index) => {
         const array = await promise;
@@ -47,7 +47,7 @@ export abstract class DeterministicWallet {
       const i = offset + index;
       const dPath = getFullPath(path, i);
       const node = masterNode.derivePath(i.toString(10));
-      return { address: toChecksumAddress(node.address), index: i, dPath };
+      return { address: toChecksumAddress(node.address) as TAddress, index: i, dPath };
     });
   }
 }
