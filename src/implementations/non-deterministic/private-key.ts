@@ -13,6 +13,11 @@ export class PrivateKey implements Wallet {
     return wallet.signTransaction(transaction);
   }
 
+  signMessage(message: string): Promise<string> {
+    const wallet = new EthersWallet(addHexPrefix(this.privateKey));
+    return wallet.signMessage(message);
+  }
+
   async getAddress(): Promise<TAddress> {
     const wallet = new EthersWallet(addHexPrefix(this.privateKey));
     return (await wallet.getAddress()) as TAddress;
