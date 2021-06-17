@@ -6,5 +6,5 @@ export interface Wallet {
   signTransaction(transaction: TransactionRequest): Promise<string>;
   getAddress(): Promise<TAddress>;
   getPrivateKey(): Promise<string>;
-  // signMessage(): Promise<string>;
+  signMessage(message: string): Promise<string>;
 }
