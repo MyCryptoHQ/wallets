@@ -7,6 +7,7 @@
 declare interface HIDDevice {
   vendorId: number;
   productId: number;
+  opened: boolean;
 }
 
 declare interface HIDDeviceRequestOptions {
