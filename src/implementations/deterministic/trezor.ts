@@ -58,7 +58,7 @@ export class TrezorWalletInstance implements Wallet {
   }
 
   async getAddress(): Promise<TAddress> {
-    const result = await TrezorConnect.ethereumGetAddress({ path: this.path });
+    const result = await TrezorConnect.ethereumGetAddress({ path: this.path, showOnTrezor: false });
     if (!result.success) {
       throw Error(result.payload.error);
     }
