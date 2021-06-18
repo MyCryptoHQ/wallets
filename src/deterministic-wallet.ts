@@ -22,17 +22,15 @@ export abstract class DeterministicWallet {
     return node.neuter().extendedKey;
   }
 
-  async getAddressesWithMultipleDPaths({
-    paths,
-    limit,
-    offset = 0
-  }: {
-    paths: DerivationPath[];
-    limit: number;
-    offset?: number;
-  }): Promise<DeterministicAddress[]> {
+  async getAddressesWithMultipleDPaths(
+    input: {
+      path: DerivationPath;
+      limit: number;
+      offset?: number;
+    }[]
+  ): Promise<DeterministicAddress[]> {
     return Promise.all(
-      paths.map((path) => this.getAddresses({ path, limit, offset }))
+      input.map(({ path, limit, offset }) => this.getAddresses({ path, limit, offset }))
     ).then((results) => results.reduce((acc, cur) => acc.concat(cur), []));
   }
 
