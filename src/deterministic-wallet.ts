@@ -59,7 +59,12 @@ export abstract class DeterministicWallet {
       const i = offset + index;
       const dPath = getFullPath(path, i);
       const node = masterNode.derivePath(i.toString(10));
-      return { address: toChecksumAddress(node.address) as TAddress, index: i, dPath };
+      return {
+        address: toChecksumAddress(node.address) as TAddress,
+        index: i,
+        dPath,
+        dPathInfo: path
+      };
     });
   }
 }
