@@ -1,7 +1,7 @@
 import type { TransactionRequest } from '@ethersproject/abstract-provider';
 import type { SignatureLike } from '@ethersproject/bytes';
 import { serialize as serializeTransaction } from '@ethersproject/transactions';
-import type { EthereumTransaction } from 'trezor-connect';
+import type { EthereumTransaction, Manifest } from 'trezor-connect';
 import TrezorConnect from 'trezor-connect';
 
 import type { DerivationPath } from '../../dpaths';
@@ -71,6 +71,11 @@ export class TrezorWalletInstance implements Wallet {
 }
 
 export class TrezorWallet extends HardwareWallet {
+  constructor(manifest: Manifest) {
+    super();
+    TrezorConnect.manifest(manifest);
+  }
+
   async getAddress(path: DerivationPath, index: number): Promise<TAddress> {
     const wallet = await this.getWallet(path, index);
     return wallet.getAddress();

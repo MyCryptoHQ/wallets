@@ -5,10 +5,12 @@ import { DEFAULT_ETH, LEDGER_LIVE_ETH } from '../../dpaths';
 import { getFullPath } from '../../utils';
 import { TrezorWallet, TrezorWalletInstance } from './trezor';
 
+const manifest = { email: 'support@mycrypto.com', appUrl: 'https://app.mycrypto.com' };
+
 describe('TrezorWalletInstance', () => {
   describe('signTransaction', () => {
     it('signs a transaction', async () => {
-      const wallet = new TrezorWallet();
+      const wallet = new TrezorWallet(manifest);
       const instance = await wallet.getWallet(DEFAULT_ETH, 0);
 
       await expect(instance.signTransaction(fTransactionRequest)).resolves.toBe(fSignedTx);
@@ -24,14 +26,14 @@ describe('TrezorWalletInstance', () => {
         }
       }));
 
-      const wallet = new TrezorWallet();
+      const wallet = new TrezorWallet(manifest);
       const instance = await wallet.getWallet(DEFAULT_ETH, 0);
 
       await expect(instance.signTransaction(fTransactionRequest)).rejects.toThrow('foo bar');
     });
 
     it('throws if the chain ID or nonce is undefined', async () => {
-      const wallet = new TrezorWallet();
+      const wallet = new TrezorWallet(manifest);
       const instance = await wallet.getWallet(DEFAULT_ETH, 0);
 
       await expect(
@@ -45,7 +47,7 @@ describe('TrezorWalletInstance', () => {
 
   describe('getAddress', () => {
     it('returns an address for the derivation path of the instance', async () => {
-      const wallet = new TrezorWallet();
+      const wallet = new TrezorWallet(manifest);
       const instance = await wallet.getWallet(DEFAULT_ETH, 0);
 
       await expect(instance.getAddress()).resolves.toBe(
@@ -63,7 +65,7 @@ describe('TrezorWalletInstance', () => {
         }
       }));
 
-      const wallet = new TrezorWallet();
+      const wallet = new TrezorWallet(manifest);
       const instance = await wallet.getWallet(DEFAULT_ETH, 0);
 
       await expect(instance.getAddress()).rejects.toThrow('foo bar');
@@ -72,7 +74,7 @@ describe('TrezorWalletInstance', () => {
 
   describe('getPrivateKey', () => {
     it('throws an error', async () => {
-      const wallet = new TrezorWallet();
+      const wallet = new TrezorWallet(manifest);
       const instance = await wallet.getWallet(DEFAULT_ETH, 0);
 
       await expect(() => instance.getPrivateKey()).rejects.toThrow('Method not implemented.');
@@ -83,7 +85,7 @@ describe('TrezorWalletInstance', () => {
 describe('TrezorWallet', () => {
   describe('getAddress', () => {
     it('fetches an address from the device', async () => {
-      const wallet = new TrezorWallet();
+      const wallet = new TrezorWallet(manifest);
 
       await expect(wallet.getAddress(DEFAULT_ETH, 0)).resolves.toBe(
         '0xc6D5a3c98EC9073B54FA0969957Bd582e8D874bf'
@@ -96,7 +98,7 @@ describe('TrezorWallet', () => {
 
   describe('getHardenedAddress', () => {
     it('fetches an address from the device on a hardened level', async () => {
-      const wallet = new TrezorWallet();
+      const wallet = new TrezorWallet(manifest);
 
       await expect(wallet.getHardenedAddress(LEDGER_LIVE_ETH, 0)).resolves.toBe(
         '0xc6D5a3c98EC9073B54FA0969957Bd582e8D874bf'
@@ -116,14 +118,14 @@ describe('TrezorWallet', () => {
         }
       }));
 
-      const wallet = new TrezorWallet();
+      const wallet = new TrezorWallet(manifest);
       await expect(wallet.getHardenedAddress(LEDGER_LIVE_ETH, 0)).rejects.toThrow('foo bar');
     });
   });
 
   describe('getAddresses', () => {
     it('fetches multiple addresses for a derivation path', async () => {
-      const wallet = new TrezorWallet();
+      const wallet = new TrezorWallet(manifest);
 
       await expect(wallet.getAddresses({ path: DEFAULT_ETH, limit: 5 })).resolves.toStrictEqual([
         {
@@ -155,7 +157,7 @@ describe('TrezorWallet', () => {
     });
 
     it('fetches multiple addresses for a hardened derivation path', async () => {
-      const wallet = new TrezorWallet();
+      const wallet = new TrezorWallet(manifest);
 
       await expect(wallet.getAddresses({ path: LEDGER_LIVE_ETH, limit: 5 })).resolves.toStrictEqual(
         [
@@ -191,7 +193,7 @@ describe('TrezorWallet', () => {
 
   describe('getExtendedKey', () => {
     it('fetches a public key and chaincode from the device', async () => {
-      const wallet = new TrezorWallet();
+      const wallet = new TrezorWallet(manifest);
 
       await expect(wallet.getExtendedKey(getFullPath(DEFAULT_ETH, 0))).resolves.toStrictEqual({
         chainCode: '0x968a2e8e9aa80d3c3416b33e3d912b6a919af9909f42d29d2eb0b8f28ea4dcfd',
@@ -215,14 +217,14 @@ describe('TrezorWallet', () => {
         }
       }));
 
-      const wallet = new TrezorWallet();
+      const wallet = new TrezorWallet(manifest);
       await expect(wallet.getExtendedKey(getFullPath(DEFAULT_ETH, 0))).rejects.toThrow('foo bar');
     });
   });
 
   describe('getWallet', () => {
     it('returns an instance of a Trezor wallet at a specific derivation path', async () => {
-      const wallet = new TrezorWallet();
+      const wallet = new TrezorWallet(manifest);
 
       const instance = await wallet.getWallet(DEFAULT_ETH, 0);
 
