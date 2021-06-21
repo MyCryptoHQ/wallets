@@ -3,7 +3,13 @@ import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 
-import { fSignedTokenTx, fSignedTx, fTransactionRequest } from '../../../.jest/__fixtures__';
+import {
+  fMessageToSign,
+  fSignedMessage,
+  fSignedTokenTx,
+  fSignedTx,
+  fTransactionRequest
+} from '../../../.jest/__fixtures__';
 import { DEFAULT_ETH, LEDGER_LIVE_ETH } from '../../dpaths';
 import { getFullPath } from '../../utils';
 import { LedgerWallet, LedgerWalletInstance } from './ledger';
@@ -83,6 +89,22 @@ describe('LedgerWalletInstance', () => {
       await expect(instance.getAddress()).resolves.toBe(
         '0xc6D5a3c98EC9073B54FA0969957Bd582e8D874bf'
       );
+    });
+  });
+
+  describe('signMessage', () => {
+    it('signs message', async () => {
+      // @todo Maarten please fill this out :p - https://imgur.com/DXRVK
+      const store = RecordStore.fromString(`
+        => e002000015058000002c8000003c800000000000000000000000
+        <= 4104b884d0c53b60fb8aafba20ca84870f20428082863f1d39a402c36c2de356cb0c6c0a582f54ee29911ca6f1823d34405623f4a7418db8ebb0203bc3acba08ba6428633644356133633938454339303733423534464130393639393537426435383265384438373462669000
+      `);
+
+      const transport = createTransportReplayer(store);
+      const wallet = new LedgerWallet(await transport.create());
+      const instance = await wallet.getWallet(DEFAULT_ETH, 0);
+
+      await expect(instance.signMessage(fMessageToSign)).resolves.toBe(fSignedMessage);
     });
   });
 
