@@ -1,10 +1,23 @@
-import { fAddress, fPrivateKey, fSignedTx, fTransactionRequest } from '../../../.jest/__fixtures__';
+import {
+  fAddress,
+  fMessageToSign,
+  fPrivateKey,
+  fSignedMessage,
+  fSignedTx,
+  fTransactionRequest
+} from '../../../.jest/__fixtures__';
 import { PrivateKey } from './private-key';
 
 describe('Private Key', () => {
   it('signs transaction correctly', () => {
     return expect(new PrivateKey(fPrivateKey).signTransaction(fTransactionRequest)).resolves.toBe(
       fSignedTx
+    );
+  });
+
+  it('signs messages correctly', () => {
+    return expect(new PrivateKey(fPrivateKey).signMessage(fMessageToSign)).resolves.toBe(
+      fSignedMessage
     );
   });
 

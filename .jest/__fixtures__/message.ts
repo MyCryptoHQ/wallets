@@ -1,0 +1,3 @@
+export const fMessageToSign = 'foo';
+export const fSignedMessage =
+  '0x16f672a12220dc4d9e27671ef580cfc1397a9a4d5ee19eadea46c0f350b2f72a4922be7c1f16ed9b03ef1d3351eac469e33accf5a36194b1d88923701c2b163f1b';

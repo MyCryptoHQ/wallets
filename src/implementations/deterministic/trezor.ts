@@ -41,20 +41,16 @@ export class TrezorWalletInstance implements Wallet {
   }
 
   async signMessage(message: string): Promise<string> {
-    if (!message) {
-      throw Error('No message to sign');
-    }
-
-    const response = await TrezorConnect.ethereumSignMessage({
+    const result = await TrezorConnect.ethereumSignMessage({
       message,
       path: this.path
     });
 
-    if (!response.success) {
-      throw Error('Failed to sign message');
+    if (!result.success) {
+      throw Error(result.payload.error);
     }
 
-    return response.payload.signature;
+    return result.payload.signature;
   }
 
   async getAddress(): Promise<TAddress> {

@@ -52,5 +52,23 @@ export default {
           }
         };
       }
-    )
+    ),
+
+  ethereumSignMessage: jest
+    .fn()
+    .mockImplementation(async ({ path, message }: { path: string; message: string }) => {
+      const childNode = hdNode.derivePath(path);
+      const wallet = new Wallet(childNode.privateKey);
+
+      const address = await wallet.getAddress();
+      const signature = await wallet.signMessage(message);
+
+      return {
+        success: true,
+        payload: {
+          signature,
+          address
+        }
+      };
+    })
 };

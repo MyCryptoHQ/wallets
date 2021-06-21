@@ -1,6 +1,11 @@
 import TrezorConnect from 'trezor-connect';
 
-import { fSignedTx, fTransactionRequest } from '../../../.jest/__fixtures__';
+import {
+  fMessageToSign,
+  fSignedMessage,
+  fSignedTx,
+  fTransactionRequest
+} from '../../../.jest/__fixtures__';
 import { DEFAULT_ETH, LEDGER_LIVE_ETH } from '../../dpaths';
 import { getFullPath } from '../../utils';
 import { TrezorWallet, TrezorWalletInstance } from './trezor';
@@ -78,6 +83,31 @@ describe('TrezorWalletInstance', () => {
       const instance = await wallet.getWallet(DEFAULT_ETH, 0);
 
       await expect(() => instance.getPrivateKey()).rejects.toThrow('Method not implemented.');
+    });
+  });
+
+  describe('signMessage', () => {
+    it('signs a message', async () => {
+      const wallet = new TrezorWallet(manifest);
+      const instance = await wallet.getWallet(DEFAULT_ETH, 0);
+
+      await expect(instance.signMessage(fMessageToSign)).resolves.toBe(fSignedMessage);
+    });
+
+    it('throws if the call to TrezorConnect fails', async () => {
+      (TrezorConnect.ethereumSignMessage as jest.MockedFunction<
+        typeof TrezorConnect.ethereumSignMessage
+      >).mockImplementationOnce(async () => ({
+        success: false,
+        payload: {
+          error: 'foo bar'
+        }
+      }));
+
+      const wallet = new TrezorWallet(manifest);
+      const instance = await wallet.getWallet(DEFAULT_ETH, 0);
+
+      await expect(instance.signMessage(fMessageToSign)).rejects.toThrow('foo bar');
     });
   });
 });
