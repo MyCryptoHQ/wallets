@@ -124,7 +124,7 @@ export class LedgerWallet extends HardwareWallet {
       }
 
       if (await TransportWebUSB.isSupported()) {
-        const existing = await TransportWebUSB.openConnected();
+        const existing = await TransportWebUSB.openConnected().catch(() => null);
         return existing ?? TransportWebUSB.request();
       }
     } catch {
