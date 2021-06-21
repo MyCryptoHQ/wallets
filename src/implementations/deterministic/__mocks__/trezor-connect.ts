@@ -11,6 +11,7 @@ import { addHexPrefix } from '../../../utils';
 const hdNode = HDNode.fromMnemonic(fMnemonicPhrase);
 
 export default {
+  manifest: jest.fn(),
   getPublicKey: jest.fn().mockImplementation(({ path }: { path: string }) => {
     const childNode = hdNode.derivePath(path);
     return {
