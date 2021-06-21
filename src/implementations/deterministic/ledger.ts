@@ -48,10 +48,6 @@ export class LedgerWalletInstance implements Wallet {
   }
 
   async signMessage(msg: string): Promise<string> {
-    if (!msg) {
-      throw Error('No message to sign');
-    }
-
     // eslint-disable-next-line no-restricted-globals
     const msgHex = Buffer.from(msg).toString('hex');
     const signed = await this.app.signPersonalMessage(this.path, msgHex);
