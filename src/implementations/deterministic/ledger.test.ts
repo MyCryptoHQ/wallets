@@ -26,6 +26,8 @@ import { LedgerWallet, LedgerWalletInstance } from './ledger';
 //
 // console.log(recordStore.toString());
 
+jest.mock('@ledgerhq/hw-transport-webhid');
+
 describe('LedgerWalletInstance', () => {
   describe('signTransaction', () => {
     it('signs a transaction', async () => {
@@ -318,12 +320,33 @@ describe('LedgerWallet', () => {
     `);
 
       const transport = await openTransportReplayer(store);
-      TransportWebHID.isSupported = jest.fn().mockReturnValueOnce(true);
-      TransportWebHID.list = jest.fn().mockImplementation(() => []);
-      TransportWebHID.request = jest.fn().mockImplementation(() => transport);
+      const mock = TransportWebHID as jest.MockedClass<typeof TransportWebHID>;
+      (mock.isSupported as jest.MockedFunction<typeof mock.isSupported>).mockResolvedValueOnce(
+        true
+      );
+      (mock.list as jest.MockedFunction<typeof mock.list>).mockResolvedValueOnce([]);
+      (mock.openConnected as jest.MockedFunction<typeof mock.openConnected>).mockResolvedValueOnce(
+        null
+      );
+      (mock.request as jest.MockedFunction<typeof mock.request>).mockResolvedValueOnce(
+        (transport as unknown) as TransportWebHID
+      );
       const wallet = await new LedgerWallet().getWallet(DEFAULT_ETH, 0);
       expect(await wallet.getAddress()).toBe('0xc6D5a3c98EC9073B54FA0969957Bd582e8D874bf');
       expect(TransportWebHID.request).toHaveBeenCalled();
+    });
+
+    it('uses opened TransportWebHID if available', async () => {
+      const mock = TransportWebHID as jest.MockedClass<typeof TransportWebHID>;
+      (mock.isSupported as jest.MockedFunction<typeof mock.isSupported>).mockResolvedValueOnce(
+        true
+      );
+      (mock.list as jest.MockedFunction<typeof mock.list>).mockResolvedValueOnce([
+        { opened: true, vendorId: 0x0, productId: 0x0 }
+      ]);
+
+      await new LedgerWallet().getWallet(DEFAULT_ETH, 0);
+      expect(TransportWebHID).toHaveBeenCalled();
     });
 
     it('uses TransportWebUSB when available', async () => {
