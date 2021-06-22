@@ -51,7 +51,7 @@ export class LedgerWalletInstance implements Wallet {
     // eslint-disable-next-line no-restricted-globals
     const msgHex = Buffer.from(msg).toString('hex');
     const signed = await this.app.signPersonalMessage(this.path, msgHex);
-    return addHexPrefix(signed.r + signed.s + signed.v);
+    return addHexPrefix(signed.r + signed.s + signed.v.toString(16));
   }
 
   async getAddress(): Promise<TAddress> {

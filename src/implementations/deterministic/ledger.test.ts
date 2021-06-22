@@ -94,10 +94,9 @@ describe('LedgerWalletInstance', () => {
 
   describe('signMessage', () => {
     it('signs message', async () => {
-      // @todo Maarten please fill this out :p - https://imgur.com/DXRVK
       const store = RecordStore.fromString(`
         => e00800001c058000002c8000003c80000000000000000000000000000003666f6f
-        <= 4104b884d0c53b60fb8aafba20ca84870f20428082863f1d39a402c36c2de356cb0c6c0a582f54ee29911ca6f1823d34405623f4a7418db8ebb0203bc3acba08ba6428633644356133633938454339303733423534464130393639393537426435383265384438373462669000
+        <= 1b16f672a12220dc4d9e27671ef580cfc1397a9a4d5ee19eadea46c0f350b2f72a4922be7c1f16ed9b03ef1d3351eac469e33accf5a36194b1d88923701c2b163f9000
       `);
 
       const transport = await openTransportReplayer(store);
