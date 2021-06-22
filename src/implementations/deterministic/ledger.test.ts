@@ -1,4 +1,4 @@
-import { createTransportReplayer, RecordStore } from '@ledgerhq/hw-transport-mocker';
+import { RecordStore, openTransportReplayer } from '@ledgerhq/hw-transport-mocker';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
@@ -34,8 +34,8 @@ describe('LedgerWalletInstance', () => {
         <= 2975b96c4423ea79037099e0f8a0fa7d8538f00c6aaddea26e151320aac65ae3bd5266d81476adedc28c5e769f8bf016de33bdaa49f341435df429e01fe5f9b16e9000
       `);
 
-      const transport = createTransportReplayer(store);
-      const wallet = new LedgerWallet(await transport.create());
+      const transport = await openTransportReplayer(store);
+      const wallet = new LedgerWallet(transport);
       const instance = await wallet.getWallet(DEFAULT_ETH, 0);
 
       await expect(instance.signTransaction(fTransactionRequest)).resolves.toBe(fSignedTx);
@@ -49,8 +49,8 @@ describe('LedgerWalletInstance', () => {
         <= 2686fdf8b0c4ba7e59b93f0a81a9d5083835caf56b17aac3fe251f276a10ef33d44ec0c25116937acdec4617182127d9f6a9431e837412babd150331d00d5e0ae99000
       `);
 
-      const transport = createTransportReplayer(store);
-      const wallet = new LedgerWallet(await transport.create());
+      const transport = await openTransportReplayer(store);
+      const wallet = new LedgerWallet(transport);
       const instance = await wallet.getWallet(DEFAULT_ETH, 0);
 
       await expect(
@@ -65,8 +65,8 @@ describe('LedgerWalletInstance', () => {
     it('throws on missing chain id', async () => {
       const store = new RecordStore();
 
-      const transport = createTransportReplayer(store);
-      const wallet = new LedgerWallet(await transport.create());
+      const transport = await openTransportReplayer(store);
+      const wallet = new LedgerWallet(transport);
       const instance = await wallet.getWallet(DEFAULT_ETH, 0);
 
       await expect(() =>
@@ -82,8 +82,8 @@ describe('LedgerWalletInstance', () => {
         <= 4104b884d0c53b60fb8aafba20ca84870f20428082863f1d39a402c36c2de356cb0c6c0a582f54ee29911ca6f1823d34405623f4a7418db8ebb0203bc3acba08ba6428633644356133633938454339303733423534464130393639393537426435383265384438373462669000
       `);
 
-      const transport = createTransportReplayer(store);
-      const wallet = new LedgerWallet(await transport.create());
+      const transport = await openTransportReplayer(store);
+      const wallet = new LedgerWallet(transport);
       const instance = await wallet.getWallet(DEFAULT_ETH, 0);
 
       await expect(instance.getAddress()).resolves.toBe(
@@ -100,8 +100,8 @@ describe('LedgerWalletInstance', () => {
         <= 4104b884d0c53b60fb8aafba20ca84870f20428082863f1d39a402c36c2de356cb0c6c0a582f54ee29911ca6f1823d34405623f4a7418db8ebb0203bc3acba08ba6428633644356133633938454339303733423534464130393639393537426435383265384438373462669000
       `);
 
-      const transport = createTransportReplayer(store);
-      const wallet = new LedgerWallet(await transport.create());
+      const transport = await openTransportReplayer(store);
+      const wallet = new LedgerWallet(transport);
       const instance = await wallet.getWallet(DEFAULT_ETH, 0);
 
       await expect(instance.signMessage(fMessageToSign)).resolves.toBe(fSignedMessage);
@@ -112,8 +112,8 @@ describe('LedgerWalletInstance', () => {
     it('throws an error', async () => {
       const store = new RecordStore();
 
-      const transport = createTransportReplayer(store);
-      const wallet = new LedgerWallet(await transport.create());
+      const transport = await openTransportReplayer(store);
+      const wallet = new LedgerWallet(transport);
       const instance = await wallet.getWallet(DEFAULT_ETH, 0);
 
       await expect(() => instance.getPrivateKey()).rejects.toThrow('Method not implemented.');
@@ -131,8 +131,8 @@ describe('LedgerWallet', () => {
         <= 4104b21938e18aec1e2e7478988ccae5b556597d771c8e46ac2c8ea2a4a1a80619679230a109cd30e8af15856b15799e38991e45e55f406a8a24d5605ba0757da53c28353941383937413264626435354432306243433942353264356561413134453238353944633436379000
       `);
 
-      const transport = createTransportReplayer(store);
-      const wallet = new LedgerWallet(await transport.create());
+      const transport = await openTransportReplayer(store);
+      const wallet = new LedgerWallet(transport);
 
       await expect(wallet.getAddress(DEFAULT_ETH, 0)).resolves.toBe(
         '0xc6D5a3c98EC9073B54FA0969957Bd582e8D874bf'
@@ -152,8 +152,8 @@ describe('LedgerWallet', () => {
         <= 4104ecc55657c13ddfb60cd03a6787bfd524cc960570d7a84f987126f337c1c7cf0eeda2877ce13ee570bbe32ef47c603feb8acf63c4ff350e98f0251bdabfcf76dc28334645373033613230333543423335393043383635613039463535366544646130326232436631329000
       `);
 
-      const transport = createTransportReplayer(store);
-      const wallet = new LedgerWallet(await transport.create());
+      const transport = await openTransportReplayer(store);
+      const wallet = new LedgerWallet(transport);
 
       await expect(wallet.getHardenedAddress(LEDGER_LIVE_ETH, 0)).resolves.toBe(
         '0xc6D5a3c98EC9073B54FA0969957Bd582e8D874bf'
@@ -173,8 +173,8 @@ describe('LedgerWallet', () => {
         <= 4104d54226ceac221f494aa1888252f47220e9d4cf0ddc11a651433bcad6364ee2af9862e1c78d56331267a95c660b182ea47e8dd0cedb231a2a1de59e8c3031bf222863643137353661664437334531663937423166393266334633614131303532456334374235333532f34046e410a060091825436065aa12e074c6c8f348e3528578e902777789d0b59000
       `);
 
-      const transport = createTransportReplayer(store);
-      const wallet = new LedgerWallet(await transport.create());
+      const transport = await openTransportReplayer(store);
+      const wallet = new LedgerWallet(transport);
 
       await expect(wallet.getAddresses({ path: DEFAULT_ETH, limit: 5 })).resolves.toStrictEqual([
         expect.objectContaining({
@@ -219,8 +219,8 @@ describe('LedgerWallet', () => {
         <= 410474c0c80b86d0d50da9607401c43420928f2feb829b6c3e569a6fabbf5bba9a17903666aca0fd26c541bbeeae6ac2271848e3739db35fd926eab5a535b8c8387528393165323833314135324534656545326566613842303542306244304339333034303734393544439000
       `);
 
-      const transport = createTransportReplayer(store);
-      const wallet = new LedgerWallet(await transport.create());
+      const transport = await openTransportReplayer(store);
+      const wallet = new LedgerWallet(transport);
 
       await expect(wallet.getAddresses({ path: LEDGER_LIVE_ETH, limit: 5 })).resolves.toStrictEqual(
         [
@@ -263,8 +263,8 @@ describe('LedgerWallet', () => {
         <= 4104b21938e18aec1e2e7478988ccae5b556597d771c8e46ac2c8ea2a4a1a80619679230a109cd30e8af15856b15799e38991e45e55f406a8a24d5605ba0757da53c28353941383937413264626435354432306243433942353264356561413134453238353944633436376265b647bc0e70480f29856be102fe866ea6a8ec9e2926c198c2e9c4cd268a439000
       `);
 
-      const transport = createTransportReplayer(store);
-      const wallet = new LedgerWallet(await transport.create());
+      const transport = await openTransportReplayer(store);
+      const wallet = new LedgerWallet(transport);
 
       await expect(wallet.getExtendedKey(getFullPath(DEFAULT_ETH, 0))).resolves.toStrictEqual({
         chainCode: '968a2e8e9aa80d3c3416b33e3d912b6a919af9909f42d29d2eb0b8f28ea4dcfd',
@@ -286,8 +286,8 @@ describe('LedgerWallet', () => {
         <= 4104b884d0c53b60fb8aafba20ca84870f20428082863f1d39a402c36c2de356cb0c6c0a582f54ee29911ca6f1823d34405623f4a7418db8ebb0203bc3acba08ba6428633644356133633938454339303733423534464130393639393537426435383265384438373462669000
       `);
 
-      const transport = createTransportReplayer(store);
-      const wallet = new LedgerWallet(await transport.create());
+      const transport = await openTransportReplayer(store);
+      const wallet = new LedgerWallet(transport);
 
       const instance = await wallet.getWallet(DEFAULT_ETH, 0);
 
@@ -318,10 +318,10 @@ describe('LedgerWallet', () => {
       <= 4104b884d0c53b60fb8aafba20ca84870f20428082863f1d39a402c36c2de356cb0c6c0a582f54ee29911ca6f1823d34405623f4a7418db8ebb0203bc3acba08ba6428633644356133633938454339303733423534464130393639393537426435383265384438373462669000
     `);
 
-      const transport = createTransportReplayer(store);
+      const transport = await openTransportReplayer(store);
       TransportWebHID.isSupported = jest.fn().mockReturnValueOnce(true);
       TransportWebHID.list = jest.fn().mockImplementation(() => []);
-      TransportWebHID.request = jest.fn().mockImplementation(() => transport.create());
+      TransportWebHID.request = jest.fn().mockImplementation(() => transport);
       const wallet = await new LedgerWallet().getWallet(DEFAULT_ETH, 0);
       expect(await wallet.getAddress()).toBe('0xc6D5a3c98EC9073B54FA0969957Bd582e8D874bf');
       expect(TransportWebHID.request).toHaveBeenCalled();
@@ -333,9 +333,9 @@ describe('LedgerWallet', () => {
       <= 4104b884d0c53b60fb8aafba20ca84870f20428082863f1d39a402c36c2de356cb0c6c0a582f54ee29911ca6f1823d34405623f4a7418db8ebb0203bc3acba08ba6428633644356133633938454339303733423534464130393639393537426435383265384438373462669000
     `);
 
-      const transport = createTransportReplayer(store);
+      const transport = await openTransportReplayer(store);
       TransportWebUSB.isSupported = jest.fn().mockReturnValueOnce(true);
-      TransportWebUSB.request = jest.fn().mockImplementation(() => transport.create());
+      TransportWebUSB.request = jest.fn().mockImplementation(() => transport);
       const wallet = await new LedgerWallet().getWallet(DEFAULT_ETH, 0);
       expect(await wallet.getAddress()).toBe('0xc6D5a3c98EC9073B54FA0969957Bd582e8D874bf');
       expect(TransportWebUSB.request).toHaveBeenCalled();
@@ -347,9 +347,9 @@ describe('LedgerWallet', () => {
       <= 4104b884d0c53b60fb8aafba20ca84870f20428082863f1d39a402c36c2de356cb0c6c0a582f54ee29911ca6f1823d34405623f4a7418db8ebb0203bc3acba08ba6428633644356133633938454339303733423534464130393639393537426435383265384438373462669000
     `);
 
-      const transport = createTransportReplayer(store);
-      TransportU2F.isSupported = jest.fn().mockReturnValueOnce(true);
-      TransportU2F.create = jest.fn().mockImplementation(() => transport.create());
+      const transport = await openTransportReplayer(store);
+      jest.spyOn(TransportU2F, 'isSupported').mockResolvedValueOnce(true);
+      TransportU2F.create = jest.fn().mockImplementation(() => transport);
       const wallet = await new LedgerWallet().getWallet(DEFAULT_ETH, 0);
       expect(await wallet.getAddress()).toBe('0xc6D5a3c98EC9073B54FA0969957Bd582e8D874bf');
       expect(TransportU2F.create).toHaveBeenCalled();

@@ -1,3 +1,4 @@
+// @todo Remove if possible?
 declare module '@ledgerhq/hw-app-eth/erc20' {
   import type { Buffer } from 'buffer';
 
