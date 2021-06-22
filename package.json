@@ -38,6 +38,7 @@
     "@ethersproject/json-wallets": "5.3.0",
     "@ethersproject/sha2": "5.3.0",
     "@ethersproject/signing-key": "5.3.0",
+    "@ethersproject/strings": "5.3.0",
     "@ethersproject/transactions": "5.3.0",
     "@ethersproject/wallet": "5.3.0",
     "@ledgerhq/hw-app-eth": "6.0.2",

@@ -1,5 +1,7 @@
 import type { TransactionRequest } from '@ethersproject/abstract-provider';
 import type { SignatureLike } from '@ethersproject/bytes';
+import { hexlify } from '@ethersproject/bytes';
+import { toUtf8Bytes } from '@ethersproject/strings';
 import { serialize as serializeTransaction } from '@ethersproject/transactions';
 import EthereumApp from '@ledgerhq/hw-app-eth';
 import { byContractAddress } from '@ledgerhq/hw-app-eth/erc20';
@@ -48,8 +50,8 @@ export class LedgerWalletInstance implements Wallet {
   }
 
   async signMessage(msg: string): Promise<string> {
-    // eslint-disable-next-line no-restricted-globals
-    const msgHex = Buffer.from(msg).toString('hex');
+    const bytes = toUtf8Bytes(msg);
+    const msgHex = stripHexPrefix(hexlify(bytes));
     const signed = await this.app.signPersonalMessage(this.path, msgHex);
     return addHexPrefix(signed.r + signed.s + signed.v.toString(16));
   }
