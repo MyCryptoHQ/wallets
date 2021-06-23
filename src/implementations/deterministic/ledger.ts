@@ -18,7 +18,11 @@ import type { Wallet } from '../../wallet';
 import { HardwareWallet } from './hardware-wallet';
 
 export class LedgerWalletInstance implements Wallet {
-  constructor(private readonly app: EthereumApp, private readonly path: string) {}
+  constructor(
+    private readonly app: EthereumApp,
+    private readonly path: string,
+    private readonly address?: TAddress
+  ) {}
 
   async signTransaction(rawTx: TransactionRequest): Promise<string> {
     const transaction = sanitizeTx(rawTx);
@@ -57,7 +61,9 @@ export class LedgerWalletInstance implements Wallet {
   }
 
   async getAddress(): Promise<TAddress> {
-    return (await this.app.getAddress(this.path, false, false)).address as TAddress;
+    return (
+      this.address ?? ((await this.app.getAddress(this.path, false, false)).address as TAddress)
+    );
   }
 
   async getPrivateKey(): Promise<string> {
@@ -92,9 +98,9 @@ export class LedgerWallet extends HardwareWallet {
     return result.address as TAddress;
   }
 
-  async getWallet(path: DerivationPath, index: number): Promise<Wallet> {
+  async getWallet(path: DerivationPath, index: number, address?: TAddress): Promise<Wallet> {
     const app = await this.getApp();
-    return new LedgerWalletInstance(app, getFullPath(path, index));
+    return new LedgerWalletInstance(app, getFullPath(path, index), address);
   }
 
   protected async getApp(): Promise<EthereumApp> {

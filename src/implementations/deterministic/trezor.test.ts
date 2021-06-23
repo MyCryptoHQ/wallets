@@ -1,6 +1,7 @@
 import TrezorConnect from 'trezor-connect';
 
 import {
+  fAddress,
   fMessageToSign,
   fSignedMessage,
   fSignedTx,
@@ -74,6 +75,13 @@ describe('TrezorWalletInstance', () => {
       const instance = await wallet.getWallet(DEFAULT_ETH, 0);
 
       await expect(instance.getAddress()).rejects.toThrow('foo bar');
+    });
+
+    it('returns cached address if passed', async () => {
+      const wallet = new TrezorWallet(manifest);
+      const instance = await wallet.getWallet(DEFAULT_ETH, 0, fAddress);
+
+      await expect(instance.getAddress()).resolves.toBe(fAddress);
     });
   });
 

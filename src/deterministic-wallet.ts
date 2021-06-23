@@ -8,7 +8,7 @@ import type { Wallet } from './wallet';
 export abstract class DeterministicWallet {
   abstract getAddress(path: DerivationPath, index: number): Promise<TAddress>;
   abstract getHardenedAddress(path: DerivationPath, index: number): Promise<TAddress>;
-  abstract getWallet(path: DerivationPath, index: number): Promise<Wallet>;
+  abstract getWallet(path: DerivationPath, index: number, address?: TAddress): Promise<Wallet>;
   protected abstract getHDNode(path: DerivationPath): Promise<HDNode>;
 
   /**

@@ -4,6 +4,7 @@ import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 
 import {
+  fAddress,
   fMessageToSign,
   fSignedMessage,
   fSignedTokenTx,
@@ -91,6 +92,16 @@ describe('LedgerWalletInstance', () => {
       await expect(instance.getAddress()).resolves.toBe(
         '0xc6D5a3c98EC9073B54FA0969957Bd582e8D874bf'
       );
+    });
+
+    it('returns cached address if passed', async () => {
+      const store = new RecordStore();
+
+      const transport = await openTransportReplayer(store);
+      const wallet = new LedgerWallet(transport);
+      const instance = await wallet.getWallet(DEFAULT_ETH, 0, fAddress);
+
+      await expect(instance.getAddress()).resolves.toBe(fAddress);
     });
   });
 
