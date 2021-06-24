@@ -63,7 +63,7 @@ export class LedgerWalletInstance implements Wallet {
   async getAddress(): Promise<TAddress> {
     return (
       this.address ??
-      ((await this.app.getAddress(this.path, false, false)).catch(wrapLedgerError)
+      ((await this.app.getAddress(this.path, false, false).catch(wrapLedgerError))
         .address as TAddress)
     );
   }
