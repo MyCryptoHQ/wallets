@@ -6,17 +6,7 @@ export const isErrorWithId = (err: LedgerError): err is ErrorWithId =>
   Object.prototype.hasOwnProperty.call(err, 'id') &&
   Object.prototype.hasOwnProperty.call(err, 'message');
 
-/*
- * Note: U2F Timeout is 30s
- * Some error codes (hex):
- * 6804,6d00 - Wrong app
- * 6700      - Too long..? Not sure what this is
- * 6801      - Locked device (timeout...?)
- * 6985      - Signature request denied
- * 6a80      - Invalid data received (contract data turned off)
- */
-
-export const wrapLedgerError = (err: LedgerError) => {
+export const wrapLedgerError = (err: LedgerError): void => {
   throw new Error(ledgerErrToMessage(err));
 };
 
