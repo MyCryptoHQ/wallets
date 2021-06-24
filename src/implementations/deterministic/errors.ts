@@ -2,7 +2,6 @@ import type { ErrorWithId, LedgerError, U2FError } from '../../types';
 
 export const isU2FError = (err: LedgerError): err is U2FError =>
   !!err && !!(err as U2FError).metaData;
-export const isStringError = (err: LedgerError): err is string => typeof err === 'string';
 export const isErrorWithId = (err: LedgerError): err is ErrorWithId =>
   Object.prototype.hasOwnProperty.call(err, 'id') &&
   Object.prototype.hasOwnProperty.call(err, 'message');
@@ -26,30 +25,26 @@ export const ledgerErrToMessage = (err: LedgerError): string => {
   if (isU2FError(err)) {
     // Timeout
     if (err.metaData.code === 5) {
-      return 'The request timed out';
+      return 'The request timed out.';
     }
 
     return err.metaData.type;
   }
 
-  if (isStringError(err)) {
-    // Wrong app logged into || Not in an app
-    if (err.includes('6804') || err.includes('6d00') || err.includes('6700')) {
-      return 'Incorrect network application selected on your Ledger device. Please select the application for the correct network.';
-    }
-    // Ledger locked
-    if (err.includes('6801')) {
-      return 'Your Ledger device is locked';
-    }
-
-    return err;
-  }
-
   if (isErrorWithId(err)) {
     // Browser doesn't support U2F
     if (err.message.includes('U2F not supported')) {
-      return 'The U2F standard that hardware wallets use does not seem to be supported by your browser. Please try again using Google Chrome';
+      return 'The U2F standard that hardware wallets use does not seem to be supported by your browser. Please try again using Google Chrome.';
     }
+  }
+
+  // Wrong app logged into || Not in an app
+  if (
+    err.message.includes('6804') ||
+    err.message.includes('6d00') ||
+    err.message.includes('6700')
+  ) {
+    return 'Incorrect network application selected on your Ledger device. Please select the application for the correct network.';
   }
 
   // Other

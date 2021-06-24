@@ -12,4 +12,4 @@ export interface ErrorWithId {
   stack: string;
 }
 
-export type LedgerError = U2FError | ErrorWithId | Error | string;
+export type LedgerError = U2FError | ErrorWithId | Error;
