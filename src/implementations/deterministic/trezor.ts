@@ -1,12 +1,20 @@
 import type { TransactionRequest } from '@ethersproject/abstract-provider';
 import type { SignatureLike } from '@ethersproject/bytes';
+import { HDNode } from '@ethersproject/hdnode';
 import { serialize as serializeTransaction } from '@ethersproject/transactions';
-import type { EthereumTransaction, Manifest } from 'trezor-connect';
+import type { EthereumTransaction, HDNodeResponse, Manifest } from 'trezor-connect';
 import TrezorConnect from 'trezor-connect';
 
 import type { DerivationPath } from '../../dpaths';
-import type { TAddress } from '../../types';
-import { addHexPrefix, getFullPath, sanitizeTx } from '../../utils';
+import type { DeterministicAddress, TAddress } from '../../types';
+import {
+  addHexPrefix,
+  createExtendedPublicKey,
+  getFullPath,
+  getPathPrefix,
+  sanitizeTx,
+  sequence
+} from '../../utils';
 import type { Wallet } from '../../wallet';
 import { HardwareWallet } from './hardware-wallet';
 
@@ -92,6 +100,41 @@ export class TrezorWallet extends HardwareWallet {
     };
   }
 
+  async getHDNodes(paths: DerivationPath[]): Promise<Record<string, HDNode>> {
+    const bundle = paths
+      .filter((path) => !path.isHardened)
+      .reduce<string[]>((paths, { path }) => {
+        const childPath = getPathPrefix(path);
+        const parentPath = getPathPrefix(childPath);
+
+        return [...paths, childPath, parentPath];
+      }, [])
+      .map((path) => ({ path }));
+    const result = await TrezorConnect.getPublicKey({ bundle });
+    if (!result.success) {
+      throw Error(result.payload.error);
+    }
+
+    const keys = result.payload.reduce((acc, cur) => {
+      return { ...acc, [cur.serializedPath]: cur };
+    }, {} as Record<string, HDNodeResponse>);
+
+    return paths.reduce((acc, path) => {
+      const childPath = getPathPrefix(path.path);
+      const parentPath = getPathPrefix(childPath);
+
+      const childKey = keys[childPath];
+      const parentKey = keys[parentPath];
+
+      if (childKey && parentKey) {
+        const extendedKey = createExtendedPublicKey(childPath, parentKey, childKey);
+
+        return { ...acc, [path.path]: HDNode.fromExtendedKey(extendedKey) };
+      }
+      return acc;
+    }, {} as Record<string, HDNode>);
+  }
+
   async getHardenedAddress(path: DerivationPath, index: number): Promise<TAddress> {
     const result = await TrezorConnect.ethereumGetAddress({ path: getFullPath(path, index) });
     if (!result.success) {
@@ -99,6 +142,20 @@ export class TrezorWallet extends HardwareWallet {
     }
 
     return result.payload.address as TAddress;
+  }
+
+  async getAddressesWithMultipleDPaths(
+    input: {
+      path: DerivationPath;
+      limit: number;
+      offset?: number;
+    }[]
+  ): Promise<DeterministicAddress[]> {
+    const nodes = await this.getHDNodes(input.map((p) => p.path));
+    const promises = input.map(({ path, limit, offset }) => () =>
+      this.getAddresses({ path, limit, offset, node: nodes[path.path] })
+    );
+    return sequence(promises).then((results) => results.reduce((acc, cur) => acc.concat(cur), []));
   }
 
   async getWallet(path: DerivationPath, index: number, address?: TAddress): Promise<Wallet> {

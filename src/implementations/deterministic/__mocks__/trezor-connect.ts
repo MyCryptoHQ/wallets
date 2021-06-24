@@ -12,16 +12,31 @@ const hdNode = HDNode.fromMnemonic(fMnemonicPhrase);
 
 export default {
   manifest: jest.fn(),
-  getPublicKey: jest.fn().mockImplementation(({ path }: { path: string }) => {
-    const childNode = hdNode.derivePath(path);
-    return {
-      success: true,
-      payload: {
-        publicKey: computePublicKey(childNode.publicKey, false),
-        chainCode: childNode.chainCode
+  getPublicKey: jest
+    .fn()
+    .mockImplementation(({ path, bundle }: { path: string; bundle: { path: string }[] }) => {
+      if (bundle) {
+        return {
+          success: true,
+          payload: bundle.map(({ path }) => {
+            const childNode = hdNode.derivePath(path);
+            return {
+              serializedPath: path,
+              publicKey: computePublicKey(childNode.publicKey, false),
+              chainCode: childNode.chainCode
+            };
+          })
+        };
       }
-    };
-  }),
+      const childNode = hdNode.derivePath(path);
+      return {
+        success: true,
+        payload: {
+          publicKey: computePublicKey(childNode.publicKey, false),
+          chainCode: childNode.chainCode
+        }
+      };
+    }),
 
   ethereumGetAddress: jest.fn().mockImplementation(({ path }: { path: string }) => {
     const childNode = hdNode.derivePath(path);

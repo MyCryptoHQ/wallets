@@ -38,11 +38,13 @@ export abstract class DeterministicWallet {
   async getAddresses({
     path,
     limit,
-    offset = 0
+    offset = 0,
+    node
   }: {
     path: DerivationPath;
     limit: number;
     offset?: number;
+    node?: HDNode;
   }): Promise<DeterministicAddress[]> {
     if (path.isHardened) {
       return new Array(limit).fill(undefined).reduce(async (promise, _, index) => {
@@ -55,7 +57,7 @@ export abstract class DeterministicWallet {
       }, Promise.resolve([]));
     }
 
-    const masterNode = await this.getHDNode(path);
+    const masterNode = node ?? (await this.getHDNode(path));
     return new Array(limit).fill(undefined).map((_, index) => {
       const i = offset + index;
       const dPath = getFullPath(path, i);
