@@ -111,15 +111,16 @@ export class TrezorWallet extends HardwareWallet {
       }, [])
       .map((path) => ({ path }));
     const result = await TrezorConnect.getPublicKey({ bundle });
+
     if (!result.success) {
       throw Error(result.payload.error);
     }
 
-    const keys = result.payload.reduce((acc, cur) => {
+    const keys = result.payload.reduce<Record<string, HDNodeResponse>>((acc, cur) => {
       return { ...acc, [cur.serializedPath]: cur };
-    }, {} as Record<string, HDNodeResponse>);
+    }, {});
 
-    return paths.reduce((acc, path) => {
+    return paths.reduce<Record<string, HDNode>>((acc, path) => {
       const childPath = getPathPrefix(path.path);
       const parentPath = getPathPrefix(childPath);
 
@@ -132,7 +133,7 @@ export class TrezorWallet extends HardwareWallet {
         return { ...acc, [path.path]: HDNode.fromExtendedKey(extendedKey) };
       }
       return acc;
-    }, {} as Record<string, HDNode>);
+    }, {});
   }
 
   async getHardenedAddress(path: DerivationPath, index: number): Promise<TAddress> {
