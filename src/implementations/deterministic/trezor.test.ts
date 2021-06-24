@@ -291,6 +291,25 @@ describe('TrezorWallet', () => {
         })
       ]);
     });
+
+    it('throws if the call to TrezorConnect fails', async () => {
+      (TrezorConnect.getPublicKey as jest.MockedFunction<
+        typeof TrezorConnect.getPublicKey
+      >).mockImplementationOnce(async () => ({
+        success: false,
+        payload: {
+          error: 'foo bar'
+        }
+      }));
+
+      const wallet = new TrezorWallet(manifest);
+      await expect(
+        wallet.getAddressesWithMultipleDPaths([
+          { path: DEFAULT_ETH, limit: 5 },
+          { path: LEDGER_LIVE_ETH, limit: 5 }
+        ])
+      ).rejects.toThrow('foo bar');
+    });
   });
 
   describe('getExtendedKey', () => {
