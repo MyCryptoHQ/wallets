@@ -9,5 +9,6 @@ export {
   toChecksumAddress,
   stripHexPrefix,
   addHexPrefix,
-  sanitizeTx
+  sanitizeTx,
+  getDerivationPath
 } from './utils';
