@@ -15,6 +15,7 @@ import type { DerivationPath } from '../../dpaths';
 import type { ExtendedKey, TAddress } from '../../types';
 import { addHexPrefix, getFullPath, sanitizeTx, stripHexPrefix } from '../../utils';
 import type { Wallet } from '../../wallet';
+import { wrapLedgerError } from './errors';
 import { HardwareWallet } from './hardware-wallet';
 
 export class LedgerWalletInstance implements Wallet {
@@ -35,14 +36,13 @@ export class LedgerWalletInstance implements Wallet {
     if (chainId === 1 && to) {
       const tokenInfo = byContractAddress(to);
       if (tokenInfo) {
-        await this.app.provideERC20TokenInformation(tokenInfo);
+        await this.app.provideERC20TokenInformation(tokenInfo).catch(wrapLedgerError);
       }
     }
 
-    const result = await this.app.signTransaction(
-      this.path,
-      stripHexPrefix(serializeTransaction(transaction))
-    );
+    const result = await this.app
+      .signTransaction(this.path, stripHexPrefix(serializeTransaction(transaction)))
+      .catch(wrapLedgerError);
 
     const signature: SignatureLike = {
       v: parseInt(result.v, 16),
@@ -56,13 +56,15 @@ export class LedgerWalletInstance implements Wallet {
   async signMessage(msg: string): Promise<string> {
     const bytes = toUtf8Bytes(msg);
     const msgHex = stripHexPrefix(hexlify(bytes));
-    const signed = await this.app.signPersonalMessage(this.path, msgHex);
+    const signed = await this.app.signPersonalMessage(this.path, msgHex).catch(wrapLedgerError);
     return addHexPrefix(signed.r + signed.s + signed.v.toString(16));
   }
 
   async getAddress(): Promise<TAddress> {
     return (
-      this.address ?? ((await this.app.getAddress(this.path, false, false)).address as TAddress)
+      this.address ??
+      ((await this.app.getAddress(this.path, false, false)).catch(wrapLedgerError)
+        .address as TAddress)
     );
   }
 
@@ -85,7 +87,7 @@ export class LedgerWallet extends HardwareWallet {
 
   async getExtendedKey(path: string): Promise<ExtendedKey> {
     const app = await this.getApp();
-    const { publicKey, chainCode } = await app.getAddress(path, false, true);
+    const { publicKey, chainCode } = await app.getAddress(path, false, true).catch(wrapLedgerError);
     return {
       publicKey,
       chainCode: chainCode!
@@ -94,7 +96,7 @@ export class LedgerWallet extends HardwareWallet {
 
   async getHardenedAddress(path: DerivationPath, index: number): Promise<TAddress> {
     const app = await this.getApp();
-    const result = await app.getAddress(getFullPath(path, index));
+    const result = await app.getAddress(getFullPath(path, index)).catch(wrapLedgerError);
     return result.address as TAddress;
   }
 
