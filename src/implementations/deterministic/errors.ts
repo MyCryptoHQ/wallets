@@ -6,7 +6,7 @@ export const isErrorWithId = (err: LedgerError): err is ErrorWithId =>
   Object.prototype.hasOwnProperty.call(err, 'id') &&
   Object.prototype.hasOwnProperty.call(err, 'message');
 
-export const wrapLedgerError = (err: LedgerError): void => {
+export const wrapLedgerError = (err: LedgerError) => {
   throw new Error(ledgerErrToMessage(err));
 };
 
