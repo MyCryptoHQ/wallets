@@ -32,7 +32,7 @@ export abstract class DeterministicWallet {
     const promises = input.map(({ path, limit, offset }) => () =>
       this.getAddresses({ path, limit, offset })
     );
-    return sequence(promises).then((results) => results.reduce((acc, cur) => acc.concat(cur), []));
+    return sequence(promises).then((results) => results.flat());
   }
 
   async getAddresses({

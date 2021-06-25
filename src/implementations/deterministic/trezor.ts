@@ -19,7 +19,7 @@ import type { Wallet } from '../../wallet';
 import { HardwareWallet } from './hardware-wallet';
 
 export class TrezorWalletInstance implements Wallet {
-  constructor(private readonly path: string, private readonly address?: TAddress) {}
+  constructor(private readonly path: string, private address?: TAddress) {}
 
   async signTransaction(rawTx: TransactionRequest): Promise<string> {
     const transaction = sanitizeTx(rawTx);
@@ -62,14 +62,17 @@ export class TrezorWalletInstance implements Wallet {
   }
 
   async getAddress(): Promise<TAddress> {
-    if (this.address) {
-      return this.address;
+    if (!this.address) {
+      const result = await TrezorConnect.ethereumGetAddress({
+        path: this.path,
+        showOnTrezor: false
+      });
+      if (!result.success) {
+        throw Error(result.payload.error);
+      }
+      this.address = result.payload.address as TAddress;
     }
-    const result = await TrezorConnect.ethereumGetAddress({ path: this.path, showOnTrezor: false });
-    if (!result.success) {
-      throw Error(result.payload.error);
-    }
-    return result.payload.address as TAddress;
+    return this.address;
   }
 
   async getPrivateKey(): Promise<string> {

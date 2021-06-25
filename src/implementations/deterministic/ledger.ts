@@ -22,7 +22,7 @@ export class LedgerWalletInstance implements Wallet {
   constructor(
     private readonly app: EthereumApp,
     private readonly path: string,
-    private readonly address?: TAddress
+    private address?: TAddress
   ) {}
 
   async signTransaction(rawTx: TransactionRequest): Promise<string> {
@@ -61,11 +61,12 @@ export class LedgerWalletInstance implements Wallet {
   }
 
   async getAddress(): Promise<TAddress> {
-    return (
-      this.address ??
-      ((await this.app.getAddress(this.path, false, false).catch(wrapLedgerError))
-        .address as TAddress)
-    );
+    if (!this.address) {
+      const address = (await this.app.getAddress(this.path, false, false).catch(wrapLedgerError))
+        .address as TAddress;
+      this.address = address;
+    }
+    return this.address;
   }
 
   async getPrivateKey(): Promise<string> {

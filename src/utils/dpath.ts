@@ -23,8 +23,8 @@ export const getDerivationPath = (
       segments[1] === rawSegments[1] && // Check purpose match (should always be 44' but whatever)
       segments[2] === rawSegments[2] && // Check coin type match
       (path.isHardened || segments[3] === rawSegments[3]) && // Check account match for non-hardened paths
-      (!path.isHardened || segments[lastIndex] === rawSegments[lastIndex])
-    ); // Check address match for hardened paths
+      (!path.isHardened || segments[lastIndex] === rawSegments[lastIndex]) // Check address match for hardened paths
+    );
   });
   if (derivationPath) {
     const indexSegment = derivationPath.path
