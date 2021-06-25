@@ -7,6 +7,7 @@ import TrezorConnect from 'trezor-connect';
 
 import type { DerivationPath } from '../../dpaths';
 import type { DeterministicAddress, TAddress } from '../../types';
+import { WalletsError, WalletsErrorCode } from '../../types';
 import {
   addHexPrefix,
   createExtendedPublicKey,
@@ -16,6 +17,7 @@ import {
   sequence
 } from '../../utils';
 import type { Wallet } from '../../wallet';
+import { standardizeTrezorErr } from './errors';
 import { HardwareWallet } from './hardware-wallet';
 
 export class TrezorWalletInstance implements Wallet {
@@ -25,7 +27,10 @@ export class TrezorWalletInstance implements Wallet {
     const transaction = sanitizeTx(rawTx);
 
     if (transaction.chainId === undefined || transaction.nonce === undefined) {
-      throw new Error('Missing chainId or nonce on transaction');
+      throw new WalletsError(
+        'Missing chainId or nonce on transaction',
+        WalletsErrorCode.MISSING_ARGUMENTS
+      );
     }
 
     const result = await TrezorConnect.ethereumSignTransaction({
@@ -36,7 +41,7 @@ export class TrezorWalletInstance implements Wallet {
       } as EthereumTransaction
     });
     if (!result.success) {
-      throw Error(result.payload.error);
+      throw standardizeTrezorErr(result.payload);
     }
 
     const signature: SignatureLike = {
@@ -55,7 +60,7 @@ export class TrezorWalletInstance implements Wallet {
     });
 
     if (!result.success) {
-      throw Error(result.payload.error);
+      throw standardizeTrezorErr(result.payload);
     }
 
     return result.payload.signature;
@@ -68,7 +73,7 @@ export class TrezorWalletInstance implements Wallet {
         showOnTrezor: false
       });
       if (!result.success) {
-        throw Error(result.payload.error);
+        throw standardizeTrezorErr(result.payload);
       }
       this.address = result.payload.address as TAddress;
     }
@@ -94,7 +99,7 @@ export class TrezorWallet extends HardwareWallet {
   async getExtendedKey(path: string): Promise<{ publicKey: string; chainCode: string }> {
     const result = await TrezorConnect.getPublicKey({ path });
     if (!result.success) {
-      throw Error(result.payload.error);
+      throw standardizeTrezorErr(result.payload);
     }
 
     return {
@@ -116,7 +121,7 @@ export class TrezorWallet extends HardwareWallet {
     const result = await TrezorConnect.getPublicKey({ bundle });
 
     if (!result.success) {
-      throw Error(result.payload.error);
+      throw standardizeTrezorErr(result.payload);
     }
 
     const keys = result.payload.reduce<Record<string, HDNodeResponse>>((acc, cur) => {
@@ -142,7 +147,7 @@ export class TrezorWallet extends HardwareWallet {
   async getHardenedAddress(path: DerivationPath, index: number): Promise<TAddress> {
     const result = await TrezorConnect.ethereumGetAddress({ path: getFullPath(path, index) });
     if (!result.success) {
-      throw Error(result.payload.error);
+      throw standardizeTrezorErr(result.payload);
     }
 
     return result.payload.address as TAddress;
