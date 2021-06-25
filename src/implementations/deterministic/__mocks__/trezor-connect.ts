@@ -11,16 +11,32 @@ import { addHexPrefix } from '../../../utils';
 const hdNode = HDNode.fromMnemonic(fMnemonicPhrase);
 
 export default {
-  getPublicKey: jest.fn().mockImplementation(({ path }: { path: string }) => {
-    const childNode = hdNode.derivePath(path);
-    return {
-      success: true,
-      payload: {
-        publicKey: computePublicKey(childNode.publicKey, false),
-        chainCode: childNode.chainCode
+  manifest: jest.fn(),
+  getPublicKey: jest
+    .fn()
+    .mockImplementation(({ path, bundle }: { path: string; bundle: { path: string }[] }) => {
+      if (bundle) {
+        return {
+          success: true,
+          payload: bundle.map(({ path }) => {
+            const childNode = hdNode.derivePath(path);
+            return {
+              serializedPath: path,
+              publicKey: computePublicKey(childNode.publicKey, false),
+              chainCode: childNode.chainCode
+            };
+          })
+        };
       }
-    };
-  }),
+      const childNode = hdNode.derivePath(path);
+      return {
+        success: true,
+        payload: {
+          publicKey: computePublicKey(childNode.publicKey, false),
+          chainCode: childNode.chainCode
+        }
+      };
+    }),
 
   ethereumGetAddress: jest.fn().mockImplementation(({ path }: { path: string }) => {
     const childNode = hdNode.derivePath(path);
@@ -51,5 +67,23 @@ export default {
           }
         };
       }
-    )
+    ),
+
+  ethereumSignMessage: jest
+    .fn()
+    .mockImplementation(async ({ path, message }: { path: string; message: string }) => {
+      const childNode = hdNode.derivePath(path);
+      const wallet = new Wallet(childNode.privateKey);
+
+      const address = await wallet.getAddress();
+      const signature = await wallet.signMessage(message);
+
+      return {
+        success: true,
+        payload: {
+          signature,
+          address
+        }
+      };
+    })
 };
