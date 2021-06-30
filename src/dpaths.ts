@@ -204,7 +204,7 @@ export const DEFAULT_ARTIS_SIGMA1: DerivationPath = {
 
 export const DEFAULT_ARTIS_TAU1: DerivationPath = {
   name: 'Tau1 (ATS)',
-  path: "m/44'/60'/0'/0/<account>"
+  path: "m/44'/246785'/0'/0/<account>"
 };
 
 export const DEFAULT_ETI: DerivationPath = {
