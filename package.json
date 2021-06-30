@@ -1,6 +1,6 @@
 {
   "name": "@mycrypto/wallets",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Wallet abstractions to be used throughout the MyCrypto product suite.",
   "repository": "MyCryptoHQ/wallets",
   "author": "MyCrypto",
