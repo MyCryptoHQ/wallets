@@ -182,6 +182,36 @@ export const DEFAULT_VOLTA: DerivationPath = {
   path: "m/44'/73799'/0'/0/<account>"
 };
 
+export const DEFAULT_AVAX: DerivationPath = {
+  name: 'Default (AVAX)',
+  path: "m/44'/9000'/0'/0/<account>"
+};
+
+export const DEFAULT_EVRICE: DerivationPath = {
+  name: 'Default (EVC)',
+  path: "m/44'/1020'/0'/0/<account>"
+};
+
+export const DEFAULT_POA: DerivationPath = {
+  name: 'Default (POA)',
+  path: "m/44'/178'/0'/0/<account>"
+};
+
+export const DEFAULT_ARTIS_SIGMA1: DerivationPath = {
+  name: 'Sigma1 (ATS)',
+  path: "m/44'/246529'/0'/0/<account>"
+};
+
+export const DEFAULT_ARTIS_TAU1: DerivationPath = {
+  name: 'Tau1 (ATS)',
+  path: "m/44'/246785'/0'/0/<account>"
+};
+
+export const DEFAULT_ETI: DerivationPath = {
+  name: 'Default (ETI)',
+  path: "m/44'/464'/0'/0/<account>"
+};
+
 export const LEDGER_LIVE_ETH: DerivationPath = {
   name: 'Ledger Live (ETH)',
   path: "m/44'/60'/<account>'/0/0",
@@ -239,7 +269,13 @@ export const ALL_DERIVATION_PATHS: DerivationPath[] = [
   DEFAULT_EWC,
   DEFAULT_VOLTA,
   LEDGER_LIVE_ETH,
-  LEDGER_LIVE_ETC
+  LEDGER_LIVE_ETC,
+  DEFAULT_AVAX,
+  DEFAULT_EVRICE,
+  DEFAULT_ARTIS_SIGMA1,
+  DEFAULT_POA,
+  DEFAULT_ARTIS_TAU1,
+  DEFAULT_ETI
 ];
 
 /**
