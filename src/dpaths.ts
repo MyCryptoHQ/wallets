@@ -184,7 +184,7 @@ export const DEFAULT_VOLTA: DerivationPath = {
 
 export const DEFAULT_AVAX: DerivationPath = {
   name: 'Default (AVAX)',
-  path: "m/44'/60'/0'/0/<account>"
+  path: "m/44'/9000'/0'/0/<account>"
 };
 
 export const DEFAULT_EVRICE: DerivationPath = {
@@ -194,12 +194,12 @@ export const DEFAULT_EVRICE: DerivationPath = {
 
 export const DEFAULT_POA: DerivationPath = {
   name: 'Default (POA)',
-  path: "m/44'/60'/0'/0/<account>"
+  path: "m/44'/178'/0'/0/<account>"
 };
 
 export const DEFAULT_ARTIS_SIGMA1: DerivationPath = {
   name: 'Sigma1 (ATS)',
-  path: "m/44'/60'/0'/0/<account>"
+  path: "m/44'/246529'/0'/0/<account>"
 };
 
 export const DEFAULT_ARTIS_TAU1: DerivationPath = {
