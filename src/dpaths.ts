@@ -212,6 +212,21 @@ export const DEFAULT_ETI: DerivationPath = {
   path: "m/44'/464'/0'/0/<account>"
 };
 
+export const DEFAULT_POLYGON: DerivationPath = {
+  name: 'Default (Polygon)',
+  path: "m/44'/966'/0'/0/<account>"
+};
+
+export const DEFAULT_BSC: DerivationPath = {
+  name: 'Default (BSC)',
+  path: "m/44'/714'/0'/0/<account>"
+};
+
+export const DEFAULT_XDAI: DerivationPath = {
+  name: 'Default (XDAI)',
+  path: "m/44'/700'/0'/0/<account>"
+};
+
 export const LEDGER_LIVE_ETH: DerivationPath = {
   name: 'Ledger Live (ETH)',
   path: "m/44'/60'/<account>'/0/0",
@@ -275,7 +290,10 @@ export const ALL_DERIVATION_PATHS: DerivationPath[] = [
   DEFAULT_ARTIS_SIGMA1,
   DEFAULT_POA,
   DEFAULT_ARTIS_TAU1,
-  DEFAULT_ETI
+  DEFAULT_ETI,
+  DEFAULT_POLYGON,
+  DEFAULT_BSC,
+  DEFAULT_XDAI
 ];
 
 /**
