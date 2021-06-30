@@ -219,7 +219,7 @@ export const DEFAULT_POLYGON: DerivationPath = {
 
 export const DEFAULT_BSC: DerivationPath = {
   name: 'Default (BSC)',
-  path: "m/44'/519'/0'/0/<account>"
+  path: "m/44'/714'/0'/0/<account>"
 };
 
 export const DEFAULT_XDAI: DerivationPath = {
