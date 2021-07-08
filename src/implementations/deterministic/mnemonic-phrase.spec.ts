@@ -4,7 +4,9 @@ import {
   fMnemonicPhrase,
   fPrivateKey,
   fSignedTx,
-  fTransactionRequest
+  fSignedTxEIP1559,
+  fTransactionRequest,
+  fTransactionRequestEIP1559
 } from '../../../.jest/__fixtures__';
 import { DEFAULT_ETH, LEDGER_LIVE_ETH } from '../../dpaths';
 import { MnemonicPhrase } from './mnemonic-phrase';
@@ -178,6 +180,13 @@ describe('Mnemonic Phrase', () => {
   it('wallet signs transaction correctly', async () => {
     const wallet = await new MnemonicPhrase(fMnemonicPhrase).getWallet(DEFAULT_ETH, 0);
     return expect(wallet.signTransaction(fTransactionRequest)).resolves.toBe(fSignedTx);
+  });
+
+  it('wallet signs EIP 1559 transaction correctly', async () => {
+    const wallet = await new MnemonicPhrase(fMnemonicPhrase).getWallet(DEFAULT_ETH, 0);
+    return expect(wallet.signTransaction(fTransactionRequestEIP1559)).resolves.toBe(
+      fSignedTxEIP1559
+    );
   });
 
   it('wallet derives address correctly', async () => {
