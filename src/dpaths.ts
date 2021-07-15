@@ -227,6 +227,11 @@ export const DEFAULT_XDAI: DerivationPath = {
   path: "m/44'/700'/0'/0/<account>"
 };
 
+export const DEFAULT_HECO: DerivationPath = {
+  name: 'Default (HECO)',
+  path: "m/44'/1010'/0'/0/<account>"
+};
+
 export const LEDGER_LIVE_ETH: DerivationPath = {
   name: 'Ledger Live (ETH)',
   path: "m/44'/60'/<account>'/0/0",
@@ -293,7 +298,8 @@ export const ALL_DERIVATION_PATHS: DerivationPath[] = [
   DEFAULT_ETI,
   DEFAULT_POLYGON,
   DEFAULT_BSC,
-  DEFAULT_XDAI
+  DEFAULT_XDAI,
+  DEFAULT_HECO
 ];
 
 /**
