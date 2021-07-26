@@ -9,7 +9,9 @@ import {
   fSignedMessage,
   fSignedTokenTx,
   fSignedTx,
-  fTransactionRequest
+  fSignedTxEIP1559,
+  fTransactionRequest,
+  fTransactionRequestEIP1559
 } from '../../../.jest/__fixtures__';
 import { DEFAULT_ETH, LEDGER_LIVE_ETH } from '../../dpaths';
 import { getFullPath } from '../../utils';
@@ -42,6 +44,22 @@ describe('LedgerWalletInstance', () => {
       const instance = await wallet.getWallet(DEFAULT_ETH, 0);
 
       await expect(instance.signTransaction(fTransactionRequest)).resolves.toBe(fSignedTx);
+    });
+
+    // @todo Make sure this ACTUALLY works
+    it('signs a EIP 1559 transaction', async () => {
+      const store = RecordStore.fromString(`
+        => e004000041058000002c8000003c800000000000000000000000eb0685012a05f20082520894b2bb2b958afa2e96dab3f3ce7162b87daea39017872386f26fc1000080038080
+        <= 2975b96c4423ea79037099e0f8a0fa7d8538f00c6aaddea26e151320aac65ae3bd5266d81476adedc28c5e769f8bf016de33bdaa49f341435df429e01fe5f9b16e9000
+      `);
+
+      const transport = await openTransportReplayer(store);
+      const wallet = new LedgerWallet(transport);
+      const instance = await wallet.getWallet(DEFAULT_ETH, 0);
+
+      await expect(instance.signTransaction(fTransactionRequestEIP1559)).resolves.toBe(
+        fSignedTxEIP1559
+      );
     });
 
     it('signs a transaction with token information', async () => {

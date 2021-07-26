@@ -5,7 +5,9 @@ import {
   fMessageToSign,
   fSignedMessage,
   fSignedTx,
-  fTransactionRequest
+  fSignedTxEIP1559,
+  fTransactionRequest,
+  fTransactionRequestEIP1559
 } from '../../../.jest/__fixtures__';
 import { DEFAULT_ETH, LEDGER_LIVE_ETH } from '../../dpaths';
 import { getFullPath } from '../../utils';
@@ -20,6 +22,16 @@ describe('TrezorWalletInstance', () => {
       const instance = await wallet.getWallet(DEFAULT_ETH, 0);
 
       await expect(instance.signTransaction(fTransactionRequest)).resolves.toBe(fSignedTx);
+    });
+
+    // @todo Make sure this ACTUALLY works
+    it('signs a EIP 1559 transaction', async () => {
+      const wallet = new TrezorWallet(manifest);
+      const instance = await wallet.getWallet(DEFAULT_ETH, 0);
+
+      await expect(instance.signTransaction(fTransactionRequestEIP1559)).resolves.toBe(
+        fSignedTxEIP1559
+      );
     });
 
     it('throws if the call to TrezorConnect fails', async () => {
