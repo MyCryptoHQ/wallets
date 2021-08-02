@@ -46,11 +46,11 @@ describe('LedgerWalletInstance', () => {
       await expect(instance.signTransaction(fTransactionRequest)).resolves.toBe(fSignedTx);
     });
 
-    // @todo Make sure this ACTUALLY works
+    // @todo Make sure this ACTUALLY works on a device
     it('signs a EIP 1559 transaction', async () => {
       const store = RecordStore.fromString(`
-        => e004000041058000002c8000003c800000000000000000000000eb0685012a05f20082520894b2bb2b958afa2e96dab3f3ce7162b87daea39017872386f26fc1000080038080
-        <= 2975b96c4423ea79037099e0f8a0fa7d8538f00c6aaddea26e151320aac65ae3bd5266d81476adedc28c5e769f8bf016de33bdaa49f341435df429e01fe5f9b16e9000
+        => e004000046058000002c8000003c80000000000000000000000002ef0306843b9aca008504a817c80082520894b2bb2b958afa2e96dab3f3ce7162b87daea39017872386f26fc1000080c0
+        <= 01884850dc596eac6b74175d2c62deedd9295570808882b0cd9adf47e5ac8b3b3d68881b0ef002d48ef78374d6842ee4987a222a4726af47b5a0a4bcb8f38e2cf39000
       `);
 
       const transport = await openTransportReplayer(store);
