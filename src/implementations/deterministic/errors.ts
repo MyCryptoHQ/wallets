@@ -2,7 +2,7 @@ import type { ErrorWithId, LedgerError, U2FError } from '../../types';
 import { WalletsError, WalletsErrorCode } from '../../types';
 
 export const isU2FError = (err: LedgerError): err is U2FError =>
-  !!err && !!(err as U2FError).originalError?.metaData;
+  err !== undefined && (err as U2FError).originalError?.metaData !== undefined;
 export const isErrorWithId = (err: LedgerError): err is ErrorWithId =>
   Object.prototype.hasOwnProperty.call(err, 'id') &&
   Object.prototype.hasOwnProperty.call(err, 'message');

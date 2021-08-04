@@ -29,11 +29,11 @@ export class LedgerWalletInstance implements Wallet {
     const transaction = sanitizeTx(rawTx);
     const { to, chainId } = transaction;
 
-    if (!chainId) {
+    if (chainId === undefined) {
       throw Error('Missing chainId on transaction');
     }
 
-    if (chainId === 1 && to) {
+    if (chainId === 1 && to !== undefined) {
       const tokenInfo = byContractAddress(to);
       if (tokenInfo) {
         await this.app.provideERC20TokenInformation(tokenInfo).catch(wrapLedgerError);
