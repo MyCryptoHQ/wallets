@@ -14,8 +14,8 @@ export default {
   manifest: jest.fn(),
   getPublicKey: jest
     .fn()
-    .mockImplementation(({ path, bundle }: { path: string; bundle: { path: string }[] }) => {
-      if (bundle) {
+    .mockImplementation(({ path, bundle }: { path: string; bundle?: { path: string }[] }) => {
+      if (bundle !== undefined) {
         return {
           success: true,
           payload: bundle.map(({ path }) => {

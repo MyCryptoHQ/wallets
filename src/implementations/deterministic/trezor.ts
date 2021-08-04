@@ -135,7 +135,7 @@ export class TrezorWallet extends HardwareWallet {
       const childKey = keys[childPath];
       const parentKey = keys[parentPath];
 
-      if (childKey && parentKey) {
+      if (childKey !== undefined && parentKey !== undefined) {
         const extendedKey = createExtendedPublicKey(childPath, parentKey, childKey);
 
         return { ...acc, [path.path]: HDNode.fromExtendedKey(extendedKey) };

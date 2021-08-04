@@ -3,6 +3,7 @@
   "parser": "@typescript-eslint/parser",
   "extends": ["eslint:recommended", "eslint-config-prettier"],
   "plugins": ["eslint-plugin-import"],
+  "ignorePatterns": "jest.config.ts",
   "rules": {
     "comma-dangle": ["error", "never"],
     "curly": "error",
@@ -73,9 +74,11 @@
             "ignoreRestSiblings": true,
             "argsIgnorePattern": "^_"
           }
-        ]
+        ],
+        "@typescript-eslint/strict-boolean-expressions": ["error", { "allowNullableBoolean": true }]
       },
       "parserOptions": {
+        "project": ["./tsconfig.json"],
         "ecmaFeatures": {
           "jsx": true
         }
