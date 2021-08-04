@@ -4,5 +4,5 @@ import type { UnsignedTransaction } from '@ethersproject/transactions';
 
 export const sanitizeTx = (tx: TransactionRequest): UnsignedTransaction => ({
   ...tx,
-  nonce: tx.nonce ? BigNumber.from(tx.nonce).toNumber() : undefined
+  nonce: tx.nonce !== undefined ? BigNumber.from(tx.nonce).toNumber() : undefined
 });
