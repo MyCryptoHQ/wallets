@@ -46,7 +46,6 @@ describe('LedgerWalletInstance', () => {
       await expect(instance.signTransaction(fTransactionRequest)).resolves.toBe(fSignedTx);
     });
 
-    // @todo Make sure this ACTUALLY works on a device
     it('signs a EIP 1559 transaction', async () => {
       const store = RecordStore.fromString(`
         => e004000046058000002c8000003c80000000000000000000000002ef0306843b9aca008504a817c80082520894b2bb2b958afa2e96dab3f3ce7162b87daea39017872386f26fc1000080c0
