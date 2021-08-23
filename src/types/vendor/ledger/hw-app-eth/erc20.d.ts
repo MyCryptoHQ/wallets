@@ -17,5 +17,8 @@ declare module '@ledgerhq/hw-app-eth/erc20' {
    * @param {string} contract The contract address.
    * @return {TokenInfo | undefined} Token information or undefined if address wasn't found.
    */
-  export function byContractAddress(contract: string): TokenInfo | undefined;
+  export function byContractAddressAndChainId(
+    contract: string,
+    chainId: number
+  ): TokenInfo | undefined;
 }
