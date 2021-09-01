@@ -4,7 +4,6 @@ import { hexlify } from '@ethersproject/bytes';
 import { toUtf8Bytes } from '@ethersproject/strings';
 import { serialize as serializeTransaction } from '@ethersproject/transactions';
 import EthereumApp from '@ledgerhq/hw-app-eth';
-import { byContractAddressAndChainId } from '@ledgerhq/hw-app-eth/erc20';
 import type Transport from '@ledgerhq/hw-transport';
 //import TransportNodeHid from '@ledgerhq/hw-transport-node-hid-noevents';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
@@ -27,17 +26,10 @@ export class LedgerWalletInstance implements Wallet {
 
   async signTransaction(rawTx: TransactionRequest): Promise<string> {
     const transaction = sanitizeTx(rawTx);
-    const { to, chainId } = transaction;
+    const { chainId } = transaction;
 
     if (chainId === undefined) {
       throw Error('Missing chainId on transaction');
-    }
-
-    if (chainId !== undefined && to !== undefined) {
-      const tokenInfo = byContractAddressAndChainId(to, chainId);
-      if (tokenInfo) {
-        await this.app.provideERC20TokenInformation(tokenInfo).catch(wrapLedgerError);
-      }
     }
 
     const result = await this.app

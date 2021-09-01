@@ -76,6 +76,9 @@ describe('LedgerWalletInstance', () => {
       await expect(
         instance.signTransaction({
           ...fTransactionRequest,
+          // Approval TX payload
+          data:
+            '0x095ea7b3000000000000000000000000221657776846890989a759ba2973e427dff5c9bb0000000000000000000000000000000000000000000000004563918244f40000',
           to: '0xe41d2489571d322189246dafa5ebde1f4699f498',
           chainId: 1
         })
