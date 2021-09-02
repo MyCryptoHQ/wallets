@@ -3,10 +3,12 @@ import {
   fHardenedAddress,
   fMnemonicPhrase,
   fPrivateKey,
+  fSignedTokenTx,
   fSignedTx,
   fSignedTxEIP1559,
   fTransactionRequest,
-  fTransactionRequestEIP1559
+  fTransactionRequestEIP1559,
+  fTransactionRequestToken
 } from '../../../.jest/__fixtures__';
 import { DEFAULT_ETH, LEDGER_LIVE_ETH } from '../../dpaths';
 import { MnemonicPhrase } from './mnemonic-phrase';
@@ -187,6 +189,11 @@ describe('Mnemonic Phrase', () => {
     return expect(wallet.signTransaction(fTransactionRequestEIP1559)).resolves.toBe(
       fSignedTxEIP1559
     );
+  });
+
+  it('wallet signs EIP token transaction correctly', async () => {
+    const wallet = await new MnemonicPhrase(fMnemonicPhrase).getWallet(DEFAULT_ETH, 0);
+    return expect(wallet.signTransaction(fTransactionRequestToken)).resolves.toBe(fSignedTokenTx);
   });
 
   it('wallet derives address correctly', async () => {
