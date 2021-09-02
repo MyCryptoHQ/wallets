@@ -1,4 +1,4 @@
-import { RecordStore, openTransportReplayer } from '@ledgerhq/hw-transport-mocker';
+import { openTransportReplayer, RecordStore } from '@ledgerhq/hw-transport-mocker';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
@@ -64,10 +64,8 @@ describe('LedgerWalletInstance', () => {
 
     it('signs a transaction with token information', async () => {
       const store = RecordStore.fromString(`
-        => e00a000066035a5258e41d2489571d322189246dafa5ebde1f4699f4980000001200000001304402200ae8634c22762a8ba41d2acb1e068dcce947337c6dd984f13b820d396176952302203306a49d8a6c35b11a61088e1570b3928ca3a0db6bd36f577b5ef87628561ff7
-        <= 9000
-        => e004000041058000002c8000003c800000000000000000000000eb0685012a05f20082520894e41d2489571d322189246dafa5ebde1f4699f498872386f26fc1000080018080
-        <= 2686fdf8b0c4ba7e59b93f0a81a9d5083835caf56b17aac3fe251f276a10ef33d44ec0c25116937acdec4617182127d9f6a9431e837412babd150331d00d5e0ae99000
+        => e00400008c058000002c8000003c80000000000000000000000002f8740106843b9aca008504a817c80082520894e41d2489571d322189246dafa5ebde1f4699f498872386f26fc10000b844095ea7b3000000000000000000000000221657776846890989a759ba2973e427dff5c9bb0000000000000000000000000000000000000000000000004563918244f40000c0
+        <= 00d6814aa5db69de910824b14462af006fde864224c616ab93e30f646e7309a93f0312ac6e580e918ce6e39e5f910cb95ba7b68167f4d71e581dec2495a198ecc09000
       `);
 
       const transport = await openTransportReplayer(store);
