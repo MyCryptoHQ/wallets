@@ -3,7 +3,7 @@ import { computePublicKey } from '@ethersproject/signing-key';
 import type { Transaction } from '@ethersproject/transactions';
 import { parse } from '@ethersproject/transactions';
 import { Wallet } from '@ethersproject/wallet';
-import type { EthereumTransaction } from 'trezor-connect';
+import type { EthereumTransaction, EthereumTransactionEIP1559 } from 'trezor-connect';
 
 import { fMnemonicPhrase } from '../../../../.jest/__fixtures__';
 import { addHexPrefix } from '../../../utils';
@@ -51,11 +51,23 @@ export default {
   ethereumSignTransaction: jest
     .fn()
     .mockImplementation(
-      async ({ path, transaction }: { path: string; transaction: EthereumTransaction }) => {
+      async ({
+        path,
+        transaction
+      }: {
+        path: string;
+        transaction: EthereumTransaction | EthereumTransactionEIP1559;
+      }) => {
         const childNode = hdNode.derivePath(path);
         const wallet = new Wallet(childNode.privateKey);
 
-        const signedTransaction = await wallet.signTransaction(transaction);
+        const isEIP1559 =
+          transaction.maxFeePerGas !== undefined && transaction.maxPriorityFeePerGas !== undefined;
+
+        const signedTransaction = await wallet.signTransaction({
+          ...transaction,
+          type: isEIP1559 ? 2 : 0
+        });
         const { v, r, s } = parse(signedTransaction) as Required<Transaction>;
 
         return {

@@ -24,7 +24,8 @@ export class TrezorWalletInstance implements Wallet {
   constructor(private readonly path: string, private address?: TAddress) {}
 
   async signTransaction(rawTx: TransactionRequest): Promise<string> {
-    const transaction = sanitizeTx(rawTx);
+    // Strip type from tx for now
+    const { type, ...transaction } = sanitizeTx(rawTx);
 
     if (transaction.chainId === undefined || transaction.nonce === undefined) {
       throw new WalletsError(
@@ -50,7 +51,7 @@ export class TrezorWalletInstance implements Wallet {
       s: result.payload.s
     };
 
-    return serializeTransaction(transaction, signature);
+    return serializeTransaction({ ...transaction, type }, signature);
   }
 
   async signMessage(message: string): Promise<string> {

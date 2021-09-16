@@ -24,7 +24,6 @@ describe('TrezorWalletInstance', () => {
       await expect(instance.signTransaction(fTransactionRequest)).resolves.toBe(fSignedTx);
     });
 
-    // @todo Make sure this ACTUALLY works
     it('signs a EIP 1559 transaction', async () => {
       const wallet = new TrezorWallet(manifest);
       const instance = await wallet.getWallet(DEFAULT_ETH, 0);

@@ -6684,10 +6684,10 @@ tr46@^2.0.2:
   dependencies:
     punycode "^2.1.1"
 
-trezor-connect@8.1.25:
-  version "8.1.25"
-  resolved "https://registry.yarnpkg.com/trezor-connect/-/trezor-connect-8.1.25.tgz#f06c1e0418f5fe087c12ebeb71dc8c4e6ee10634"
-  integrity sha512-tHx4igwt7F5JR5t4hXjJ3J2p8n/wjPjd+w/syEP8ibHJvomeZ5Qx7oCvZp+GILFT5lVPAxQDLlAm7vggliBZDQ==
+trezor-connect@8.2.0:
+  version "8.2.0"
+  resolved "https://registry.yarnpkg.com/trezor-connect/-/trezor-connect-8.2.0.tgz#7f677593c04b16ff49641856c8f3ac322b913b28"
+  integrity sha512-5P2DAzTPh0e0D0ru/oCp9gYKU1icmwN7JLFmMwKIBJZr48WRQkeSdK+M5GCOhCjY12gaBSQlum7TDBReA5MVcQ==
   dependencies:
     "@babel/runtime" "^7.12.5"
     events "^3.2.0"
