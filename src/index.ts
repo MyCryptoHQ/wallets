@@ -1,4 +1,5 @@
 export * from './wallet';
+export * from './wallets';
 export * from './deterministic-wallet';
 export * from './implementations';
 export * from './dpaths';
