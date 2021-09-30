@@ -1,3 +1,14 @@
+import {
+  privateKey,
+  keystoreFile,
+  mnemonicPhrase,
+  ledger,
+  trezor,
+  metamask,
+  coinbase,
+  imtoken,
+  trust
+} from 'assets';
 import type { IWallet } from 'types';
 import { WALLET_TYPES, WALLET_CONNECTIVITY, WALLET_TAGS } from 'types';
 
@@ -5,6 +16,7 @@ export const wallets: IWallet[] = [
   {
     name: 'Private Key',
     id: 'private-key',
+    icon: privateKey,
     desc: '',
     type: WALLET_TYPES.WALLET,
     connectivity: WALLET_CONNECTIVITY.MYCRYPTO,
@@ -14,6 +26,7 @@ export const wallets: IWallet[] = [
   {
     name: 'Keystore File',
     id: 'keystore-file',
+    icon: keystoreFile,
     desc: '',
     type: WALLET_TYPES.WALLET,
     connectivity: WALLET_CONNECTIVITY.MYCRYPTO,
@@ -26,6 +39,7 @@ export const wallets: IWallet[] = [
   {
     name: 'Mnemonic Phrase',
     id: 'mnemonic-phrase',
+    icon: mnemonicPhrase,
     desc: '',
     type: WALLET_TYPES.WALLET,
     connectivity: WALLET_CONNECTIVITY.MYCRYPTO,
@@ -39,6 +53,7 @@ export const wallets: IWallet[] = [
   {
     name: 'Ledger',
     id: 'ledger',
+    icon: ledger,
     desc: '',
     type: WALLET_TYPES.WALLET,
     connectivity: WALLET_CONNECTIVITY.LEDGER,
@@ -52,6 +67,7 @@ export const wallets: IWallet[] = [
   {
     name: 'Trezor',
     id: 'trezor',
+    icon: trezor,
     desc: '',
     type: WALLET_TYPES.WALLET,
     connectivity: WALLET_CONNECTIVITY.TREZOR,
@@ -65,6 +81,7 @@ export const wallets: IWallet[] = [
   {
     name: 'MetaMask',
     id: 'metamask',
+    icon: metamask,
     desc: 'Metamask is a thing.',
     type: WALLET_TYPES.WALLET,
     connectivity: WALLET_CONNECTIVITY.WEB3,
@@ -78,6 +95,7 @@ export const wallets: IWallet[] = [
   {
     name: 'Coinbase Wallet',
     id: 'coinbase-wallet',
+    icon: coinbase,
     desc: '',
     type: WALLET_TYPES.WALLET,
     connectivity: WALLET_CONNECTIVITY.WEB3,
@@ -90,6 +108,7 @@ export const wallets: IWallet[] = [
   {
     name: 'imToken',
     id: 'imtoken',
+    icon: imtoken,
     desc: '',
     connectivity: WALLET_CONNECTIVITY.WEB3,
     tags: [WALLET_TAGS.WALLET_CONNECT, WALLET_TAGS.MOBILE],
@@ -101,6 +120,7 @@ export const wallets: IWallet[] = [
   {
     name: 'Trust',
     id: 'trust',
+    icon: trust,
     desc: '',
     connectivity: WALLET_CONNECTIVITY.WEB3,
     tags: [WALLET_TAGS.WALLET_CONNECT, WALLET_TAGS.MOBILE],

@@ -37,7 +37,7 @@ export interface IWallet {
   desc: string;
   type?: WALLET_TYPES;
   connectivity: WALLET_CONNECTIVITY;
-  // icon: string;
+  icon?: string;
   tags?: WALLET_TAGS[];
   urls: {
     website?: string;
