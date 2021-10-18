@@ -33,8 +33,11 @@ export class MnemonicPhrase extends DeterministicWallet {
     return new PrivateKey(node.derivePath(index.toString(10)).privateKey);
   }
 
-  static create(passphrase?: string): MnemonicPhrase {
-    const entropy = crypto.randomBytes(MNEMONIC_ENTROPY_BYTES);
+  static create(
+    passphrase?: string,
+    entropyBytes: number = MNEMONIC_ENTROPY_BYTES
+  ): MnemonicPhrase {
+    const entropy = crypto.randomBytes(entropyBytes);
     const mnemonicPhrase = entropyToMnemonic(entropy);
 
     return new MnemonicPhrase(mnemonicPhrase, passphrase);
