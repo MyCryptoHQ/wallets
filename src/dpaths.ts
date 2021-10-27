@@ -62,11 +62,6 @@ export const DEFAULT_MUSIC: DerivationPath = {
   path: "m/44'/184'/0'/0/<account>"
 };
 
-export const DEFAULT_ETSC: DerivationPath = {
-  name: 'Default (ETSC)',
-  path: "m/44'/1128'/0'/0/<account>"
-};
-
 export const DEFAULT_EGEM: DerivationPath = {
   name: 'Default (EGEM)',
   path: "m/44'/1987'/0'/0/<account>"
@@ -90,16 +85,6 @@ export const MAINNET_RSK: DerivationPath = {
 export const DEFAULT_GO: DerivationPath = {
   name: 'Default (GO)',
   path: "m/44'/6060'/0'/0/<account>"
-};
-
-export const DEFAULT_EOSC: DerivationPath = {
-  name: 'Default (EOSC)',
-  path: "m/44'/2018'/0'/0/<account>"
-};
-
-export const DEFAULT_ESN: DerivationPath = {
-  name: 'Default (ESN)',
-  path: "m/44'/31102'/0'/0/<account>"
 };
 
 export const DEFAULT_AKA: DerivationPath = {
@@ -127,11 +112,6 @@ export const DEFAULT_MIX: DerivationPath = {
   path: "m/44'/76'/0'/0/<account>"
 };
 
-export const DEFAULT_REOSC: DerivationPath = {
-  name: 'Default (REOSC)',
-  path: "m/44'/2894'/0'/0/<account>"
-};
-
 export const DEFAULT_THUNDERCORE: DerivationPath = {
   name: 'Default (THUNDERCORE)',
   path: "m/44'/1001'/0'/0/<account>"
@@ -147,16 +127,6 @@ export const DEFAULT_METADIUM: DerivationPath = {
   path: "m/44'/916'/0'/0/<account>"
 };
 
-export const DEFAULT_SOLIDUM: DerivationPath = {
-  name: 'Default (SOLIDUM)',
-  path: "m/44'/997'/0'/0/<account>"
-};
-
-export const DEFAULT_DEXON: DerivationPath = {
-  name: 'Default (DEXON)',
-  path: "m/44'/237'/0'/0/<account>"
-};
-
 export const DEFAULT_ASK: DerivationPath = {
   name: 'Default (ASK)',
   path: "m/44'/2221'/0'/0/<account>"
@@ -165,11 +135,6 @@ export const DEFAULT_ASK: DerivationPath = {
 export const DEFAULT_AUX: DerivationPath = {
   name: 'Default (AUX)',
   path: "m/44'/344'/0'/0/<account>"
-};
-
-export const DEFAULT_ERE: DerivationPath = {
-  name: 'Default (ERE)',
-  path: "m/44'/466'/0'/0/<account>"
 };
 
 export const DEFAULT_EWC: DerivationPath = {
@@ -264,28 +229,21 @@ export const ALL_DERIVATION_PATHS: DerivationPath[] = [
   DEFAULT_TOMO,
   DEFAULT_ELLA,
   DEFAULT_MUSIC,
-  DEFAULT_ETSC,
   DEFAULT_EGEM,
   DEFAULT_CLO,
   TESTNET_RSK,
   MAINNET_RSK,
   DEFAULT_GO,
-  DEFAULT_EOSC,
-  DEFAULT_ESN,
   DEFAULT_AKA,
   DEFAULT_PIRL,
   DEFAULT_ATH,
   DEFAULT_ETHO,
   DEFAULT_MIX,
-  DEFAULT_REOSC,
   DEFAULT_THUNDERCORE,
   DEFAULT_WEB,
   DEFAULT_METADIUM,
-  DEFAULT_SOLIDUM,
-  DEFAULT_DEXON,
   DEFAULT_ASK,
   DEFAULT_AUX,
-  DEFAULT_ERE,
   DEFAULT_EWC,
   DEFAULT_VOLTA,
   LEDGER_LIVE_ETH,
