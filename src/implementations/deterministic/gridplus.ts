@@ -138,12 +138,13 @@ export class GridPlusWalletInstance implements Wallet {
     });
 
     const signature: SignatureLike = {
-      v: parseInt(result.sig.v, 16),
-      r: result.sig.r,
-      s: result.sig.s
+      // @todo Make sure this works for high chain id networks
+      v: result.sig.v.readUInt8(0),
+      r: addHexPrefix(result.sig.r),
+      s: addHexPrefix(result.sig.s)
     };
 
-    return serializeTransaction(transaction, signature);
+    return serializeTransaction({ ...transaction, type }, signature);
   }
 
   async signMessage(message: string): Promise<string> {
@@ -165,7 +166,7 @@ export class GridPlusWalletInstance implements Wallet {
       data
     });
 
-    return addHexPrefix(signed.r + signed.s + signed.v.toString(16));
+    return addHexPrefix(signed.r + signed.s + signed.v.toString('hex'));
   }
 
   async getAddress(): Promise<TAddress> {
