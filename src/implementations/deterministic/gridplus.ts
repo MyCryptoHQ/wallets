@@ -2,6 +2,7 @@
 import type { TransactionRequest } from '@ethersproject/abstract-provider';
 import type { SignatureLike } from '@ethersproject/bytes';
 import { hexlify } from '@ethersproject/bytes';
+import type { HDNode } from '@ethersproject/hdnode';
 import { toUtf8Bytes } from '@ethersproject/strings';
 import { serialize as serializeTransaction } from '@ethersproject/transactions';
 import crypto from 'crypto';
@@ -10,9 +11,15 @@ import { Client } from 'gridplus-sdk';
 import { promisify } from 'util';
 
 import type { DerivationPath } from '../../dpaths';
-import type { TAddress } from '../../types';
+import type { DeterministicAddress, TAddress } from '../../types';
 import { WalletsError, WalletsErrorCode } from '../../types';
-import { addHexPrefix, getFullPath, sanitizeTx, stripHexPrefix } from '../../utils';
+import {
+  addHexPrefix,
+  getFullPath,
+  sanitizeTx,
+  stripHexPrefix,
+  toChecksumAddress
+} from '../../utils';
 import type { Wallet } from '../../wallet';
 import { HardwareWallet } from './hardware-wallet';
 
@@ -82,6 +89,16 @@ const ensureConnection = async (client: Client, config: GridPlusConfiguration) =
   return waitForPairing(config);
 };
 
+const getConvertedPath = (path: string) => {
+  const array = path.split('/').slice(1);
+  return array.map((a) => {
+    const isHardened = a.includes("'");
+    const offset = isHardened ? HARDENED_OFFSET : 0;
+    const sliced = isHardened ? a.slice(0, a.length - 1) : a;
+    return offset + parseInt(sliced);
+  });
+};
+
 export class GridPlusWalletInstance implements Wallet {
   constructor(
     private readonly config: GridPlusConfiguration,
@@ -89,16 +106,6 @@ export class GridPlusWalletInstance implements Wallet {
     private readonly path: string,
     private address?: TAddress
   ) {}
-
-  private getConvertedPath() {
-    const array = this.path.split('/').slice(1);
-    return array.map((a) => {
-      const isHardened = a.includes("'");
-      const offset = isHardened ? HARDENED_OFFSET : 0;
-      const sliced = isHardened ? a.slice(0, a.length - 1) : a;
-      return offset + parseInt(sliced);
-    });
-  }
 
   async signTransaction(rawTx: TransactionRequest): Promise<string> {
     const transaction = sanitizeTx(rawTx);
@@ -120,7 +127,7 @@ export class GridPlusWalletInstance implements Wallet {
       data: {
         ...transaction,
         nonce: addHexPrefix(transaction.nonce.toString(16)),
-        signerPath: this.getConvertedPath()
+        signerPath: getConvertedPath(this.path)
       }
     });
 
@@ -140,7 +147,7 @@ export class GridPlusWalletInstance implements Wallet {
     const data = {
       protocol: 'signPersonal',
       payload: msgHex,
-      signerPath: this.getConvertedPath()
+      signerPath: getConvertedPath(this.path)
     };
 
     await ensureConnection(this.client, this.config);
@@ -160,7 +167,7 @@ export class GridPlusWalletInstance implements Wallet {
       await ensureConnection(this.client, this.config);
       const getAddresses = promisify(this.client.getAddresses).bind(this.client);
       this.address = (await getAddresses({
-        startPath: this.getConvertedPath(),
+        startPath: getConvertedPath(this.path),
         n: 1,
         skipCache: true
       })) as TAddress;
@@ -178,14 +185,19 @@ export class GridPlusWallet extends HardwareWallet {
     super();
   }
 
+  private client: Client;
+
   async getClient(): Promise<Client> {
     const { deviceID, password, ...clientConfig } = this.config;
     if (deviceID === undefined || password === undefined) {
       const result: any = await waitForPairing(this.config);
       this.config = { ...this.config, ...result };
     }
-    const privKey = getPrivateKey(this.config);
-    return new Client({ ...clientConfig, privKey, crypto });
+    if (this.client === undefined) {
+      const privKey = getPrivateKey(this.config);
+      this.client = new Client({ ...clientConfig, privKey, crypto });
+    }
+    return this.client;
   }
 
   async getAddress(path: DerivationPath, index: number): Promise<TAddress> {
@@ -194,13 +206,48 @@ export class GridPlusWallet extends HardwareWallet {
   }
 
   async getExtendedKey(_path: string): Promise<{ publicKey: string; chainCode: string }> {
-    // @todo
     throw new Error('Method not implemented.');
   }
 
   async getHardenedAddress(path: DerivationPath, index: number): Promise<TAddress> {
     // @todo Make sure this works?
     return this.getAddress(path, index);
+  }
+
+  // Manually scan for addresses since extended key information is not available currently
+  async getAddresses({
+    path,
+    limit,
+    offset = 0,
+    node
+  }: {
+    path: DerivationPath;
+    limit: number;
+    offset?: number;
+    node?: HDNode;
+  }): Promise<DeterministicAddress[]> {
+    if (path.isHardened) {
+      return super.getAddresses({ path, limit, offset, node });
+    }
+
+    await ensureConnection(this.client, this.config);
+    const getAddresses = promisify(this.client.getAddresses).bind(this.client);
+    const dPath = getFullPath(path, offset);
+    const addresses: string[] = await getAddresses({
+      startPath: getConvertedPath(dPath),
+      n: limit,
+      skipCache: true
+    });
+
+    return addresses.map((address, i) => {
+      const index = offset + i;
+      return {
+        address: toChecksumAddress(address) as TAddress,
+        index,
+        dPath: getFullPath(path, index),
+        dPathInfo: path
+      };
+    });
   }
 
   async getWallet(path: DerivationPath, index: number, address?: TAddress): Promise<Wallet> {
