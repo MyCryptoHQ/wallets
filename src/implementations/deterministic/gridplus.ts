@@ -108,7 +108,7 @@ export class GridPlusWalletInstance implements Wallet {
   ) {}
 
   async signTransaction(rawTx: TransactionRequest): Promise<string> {
-    const transaction = sanitizeTx(rawTx);
+    const { type, ...transaction } = sanitizeTx(rawTx);
 
     if (transaction.chainId === undefined || transaction.nonce === undefined) {
       throw new WalletsError(
@@ -121,12 +121,18 @@ export class GridPlusWalletInstance implements Wallet {
 
     const sign = promisify(this.client.sign).bind(this.client);
 
-    // @todo Hexlify all values
+    const hexlified = Object.keys(transaction).reduce((acc, cur) => {
+      // @ts-expect-error The linter doesn't like indexing via strings
+      const value = transaction[cur];
+      const hex = addHexPrefix(hexlify(value, { hexPad: 'left' }));
+      return { ...acc, [cur]: hex };
+    }, {});
+
     const result = await sign({
       currency: 'ETH',
       data: {
-        ...transaction,
-        nonce: addHexPrefix(transaction.nonce.toString(16)),
+        ...hexlified,
+        type,
         signerPath: getConvertedPath(this.path)
       }
     });
