@@ -24,10 +24,12 @@ import { HardwareWallet } from './hardware-wallet';
 
 const HARDENED_OFFSET = 0x80000000;
 
-export interface GridPlusConfiguration {
+export interface GridPlusConfiguration extends GridPlusCredentials {
   // For client
   name: string;
+}
 
+export interface GridPlusCredentials {
   // Identifying the device
   deviceID?: string;
   password?: string;
@@ -267,5 +269,9 @@ export class GridPlusWallet extends HardwareWallet {
   async getWallet(path: DerivationPath, index: number, address?: TAddress): Promise<Wallet> {
     const client = await this.getClient();
     return new GridPlusWalletInstance(this.config, client, getFullPath(path, index), address);
+  }
+
+  getCredentials(): GridPlusCredentials {
+    return { deviceID: this.config.deviceID, password: this.config.password };
   }
 }
