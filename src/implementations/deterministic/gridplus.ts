@@ -6,7 +6,6 @@ import type { HDNode } from '@ethersproject/hdnode';
 import { toUtf8Bytes } from '@ethersproject/strings';
 import { serialize as serializeTransaction } from '@ethersproject/transactions';
 import crypto from 'crypto';
-// @ts-expect-error No types right now
 import { Client } from 'gridplus-sdk';
 import { promisify } from 'util';
 
@@ -36,6 +35,7 @@ export interface GridPlusConfiguration {
 
 // @todo Handle conection & pairing
 // @todo Figure out how to fetch addresses properly
+// @todo Types
 
 const getPrivateKey = (config: GridPlusConfiguration) => {
   const buf = Buffer.concat([
@@ -63,7 +63,7 @@ const waitForPairing = (config: GridPlusConfiguration) => {
       // Parse response data
       try {
         const data = JSON.parse(event.data);
-        if (!data.deviceID || !data.password) {
+        if (data.deviceID === undefined || data.password === undefined) {
           return reject(Error('Invalid credentials returned from Lattice.'));
         }
         return resolve(data);
@@ -76,10 +76,14 @@ const waitForPairing = (config: GridPlusConfiguration) => {
 };
 
 const ensureConnection = async (client: Client, config: GridPlusConfiguration) => {
+  if (client.isPaired) {
+    return;
+  }
+
   if (config.deviceID !== undefined && config.password !== undefined) {
     const connect = promisify(client.connect).bind(client);
 
-    const isPaired: boolean = await connect(config.deviceID);
+    const isPaired = await connect(config.deviceID);
     if (isPaired) {
       return;
     }
@@ -161,23 +165,25 @@ export class GridPlusWalletInstance implements Wallet {
 
     const sign = promisify(this.client.sign).bind(this.client);
 
-    const signed = await sign({
+    const result = await sign({
       currency: 'ETH_MSG',
       data
     });
 
-    return addHexPrefix(signed.r + signed.s + signed.v.toString('hex'));
+    return addHexPrefix(result.sig.r + result.sig.s + result.sig.v.toString('hex'));
   }
 
   async getAddress(): Promise<TAddress> {
     if (!this.address) {
       await ensureConnection(this.client, this.config);
       const getAddresses = promisify(this.client.getAddresses).bind(this.client);
-      this.address = (await getAddresses({
-        startPath: getConvertedPath(this.path),
-        n: 1,
-        skipCache: true
-      })) as TAddress;
+      this.address = (
+        await getAddresses({
+          startPath: getConvertedPath(this.path),
+          n: 1,
+          skipCache: true
+        })
+      )[0] as TAddress;
     }
     return this.address;
   }
@@ -192,7 +198,7 @@ export class GridPlusWallet extends HardwareWallet {
     super();
   }
 
-  private client: Client;
+  private client?: Client;
 
   async getClient(): Promise<Client> {
     const { deviceID, password, ...clientConfig } = this.config;
@@ -237,8 +243,9 @@ export class GridPlusWallet extends HardwareWallet {
       return super.getAddresses({ path, limit, offset, node });
     }
 
-    await ensureConnection(this.client, this.config);
-    const getAddresses = promisify(this.client.getAddresses).bind(this.client);
+    const client = await this.getClient();
+    await ensureConnection(client, this.config);
+    const getAddresses = promisify(client.getAddresses).bind(this.client);
     const dPath = getFullPath(path, offset);
     const addresses: string[] = await getAddresses({
       startPath: getConvertedPath(dPath),
