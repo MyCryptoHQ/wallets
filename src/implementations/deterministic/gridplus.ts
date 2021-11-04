@@ -145,7 +145,8 @@ export class GridPlusWalletInstance implements Wallet {
 
     const signature: SignatureLike = {
       // @todo Make sure this works for high chain id networks
-      v: result.sig.v.readUInt8(0),
+      // 0 is returned as an empty buffer
+      v: result.sig.v.length === 0 ? 0 : parseInt(result.sig.v.toString('hex'), 16),
       r: addHexPrefix(result.sig.r),
       s: addHexPrefix(result.sig.s)
     };
