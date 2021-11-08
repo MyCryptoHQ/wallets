@@ -12,13 +12,7 @@ import { promisify } from 'util';
 import type { DerivationPath } from '../../dpaths';
 import type { DeterministicAddress, TAddress } from '../../types';
 import { WalletsError, WalletsErrorCode } from '../../types';
-import {
-  addHexPrefix,
-  getFullPath,
-  sanitizeTx,
-  stripHexPrefix,
-  toChecksumAddress
-} from '../../utils';
+import { addHexPrefix, getFullPath, sanitizeTx, toChecksumAddress } from '../../utils';
 import type { Wallet } from '../../wallet';
 import { HardwareWallet } from './hardware-wallet';
 
@@ -156,7 +150,7 @@ export class GridPlusWalletInstance implements Wallet {
 
   async signMessage(message: string): Promise<string> {
     const bytes = toUtf8Bytes(message);
-    const msgHex = stripHexPrefix(hexlify(bytes));
+    const msgHex = hexlify(bytes);
 
     const data = {
       protocol: 'signPersonal',
