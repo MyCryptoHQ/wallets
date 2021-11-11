@@ -30,5 +30,6 @@ declare module 'gridplus-sdk' {
     connect(deviceID: string, callback: (err: Error | null, isPaired: boolean) => void): void;
     sign(opts: SignOpts, callback: (err: Error | null, data: SignResult) => void): void;
     getAddresses(opts: AddressesOpts, callback: (err: Error | null, data: string[]) => void): void;
+    hasActiveWallet(): boolean;
   }
 }

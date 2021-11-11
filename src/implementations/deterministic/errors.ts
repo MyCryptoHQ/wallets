@@ -66,3 +66,19 @@ export const standardizeTrezorErr = (err: { error: string; code?: string }): Wal
   // Other
   return new WalletsError(err.error, WalletsErrorCode.UNKNOWN, new Error(err.error));
 };
+
+export const wrapGridPlusError = (err: Error | string) => {
+  throw standardizeGridPlusErr(err);
+};
+
+export const standardizeGridPlusErr = (err: Error | string): WalletsError => {
+  const message = typeof err === 'string' ? err : err.message;
+  if (message.includes('Timeout waiting for device')) {
+    return new WalletsError(message, WalletsErrorCode.TIMEOUT);
+  } else if (message.includes('Request Declined by User')) {
+    return new WalletsError(message, WalletsErrorCode.CANCELLED);
+  }
+
+  // Other
+  return new WalletsError(message, WalletsErrorCode.UNKNOWN, new Error(message));
+};

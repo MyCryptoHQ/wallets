@@ -14,6 +14,7 @@ import type { DeterministicAddress, TAddress } from '../../types';
 import { WalletsError, WalletsErrorCode } from '../../types';
 import { addHexPrefix, getFullPath, sanitizeTx, toChecksumAddress } from '../../utils';
 import type { Wallet } from '../../wallet';
+import { wrapGridPlusError } from './errors';
 import { HardwareWallet } from './hardware-wallet';
 
 const HARDENED_OFFSET = 0x80000000;
@@ -24,14 +25,11 @@ export interface GridPlusConfiguration extends GridPlusCredentials {
 }
 
 export interface GridPlusCredentials {
-  // Identifying the device
   deviceID?: string;
   password?: string;
 }
 
-// @todo Handle conection & pairing
-// @todo Figure out how to fetch addresses properly
-// @todo Types
+// @todo Cleanup / polish
 
 const getPrivateKey = (config: GridPlusConfiguration) => {
   const buf = Buffer.concat([
@@ -47,7 +45,10 @@ const waitForPairing = (config: GridPlusConfiguration) => {
     const baseURL = 'https://wallet.gridplus.io';
     const url = `${baseURL}?keyring=${config.name}`;
 
-    const popup = window.open(url)!;
+    const popup = window.open(url);
+    if (popup === null) {
+      throw new WalletsError('Popup blocked', WalletsErrorCode.HW_POPUP_BLOCKED);
+    }
     popup.postMessage('GET_LATTICE_CREDS', baseURL);
 
     // PostMessage handler
@@ -80,12 +81,11 @@ const ensureConnection = async (client: Client, config: GridPlusConfiguration) =
     const connect = promisify(client.connect).bind(client);
 
     const isPaired = await connect(config.deviceID);
-    if (isPaired) {
+    if (isPaired && client.hasActiveWallet()) {
       return;
     }
   }
 
-  // @todo Pairing?
   return waitForPairing(config);
 };
 
@@ -135,7 +135,7 @@ export class GridPlusWalletInstance implements Wallet {
         type,
         signerPath: getConvertedPath(this.path)
       }
-    });
+    }).catch(wrapGridPlusError);
 
     const signature: SignatureLike = {
       // @todo Make sure this works for high chain id networks
@@ -165,7 +165,7 @@ export class GridPlusWalletInstance implements Wallet {
     const result = await sign({
       currency: 'ETH_MSG',
       data
-    });
+    }).catch(wrapGridPlusError);
 
     return addHexPrefix(result.sig.r + result.sig.s + result.sig.v.toString('hex'));
   }
@@ -174,13 +174,13 @@ export class GridPlusWalletInstance implements Wallet {
     if (!this.address) {
       await ensureConnection(this.client, this.config);
       const getAddresses = promisify(this.client.getAddresses).bind(this.client);
-      this.address = (
-        await getAddresses({
-          startPath: getConvertedPath(this.path),
-          n: 1,
-          skipCache: true
-        })
-      )[0] as TAddress;
+      const addresses = await getAddresses({
+        startPath: getConvertedPath(this.path),
+        n: 1,
+        skipCache: true
+      }).catch(wrapGridPlusError);
+
+      this.address = addresses[0] as TAddress;
     }
     return this.address;
   }
@@ -220,7 +220,6 @@ export class GridPlusWallet extends HardwareWallet {
   }
 
   async getHardenedAddress(path: DerivationPath, index: number): Promise<TAddress> {
-    // @todo Make sure this works?
     return this.getAddress(path, index);
   }
 
@@ -237,7 +236,7 @@ export class GridPlusWallet extends HardwareWallet {
     node?: HDNode;
   }): Promise<DeterministicAddress[]> {
     if (path.isHardened) {
-      return super.getAddresses({ path, limit, offset, node });
+      return super.getAddresses({ path, limit, offset, node }).catch(wrapGridPlusError);
     }
 
     const client = await this.getClient();
@@ -248,7 +247,7 @@ export class GridPlusWallet extends HardwareWallet {
       startPath: getConvertedPath(dPath),
       n: limit,
       skipCache: true
-    });
+    }).catch(wrapGridPlusError);
 
     return addresses.map((address, i) => {
       const index = offset + i;
