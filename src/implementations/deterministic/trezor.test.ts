@@ -33,6 +33,17 @@ describe('TrezorWalletInstance', () => {
       );
     });
 
+    it('signs a EIP 1559 transaction with v = 0', async () => {
+      const wallet = new TrezorWallet(manifest);
+      const instance = await wallet.getWallet(DEFAULT_ETH, 0);
+
+      await expect(
+        instance.signTransaction({ ...fTransactionRequestEIP1559, nonce: 2 })
+      ).resolves.toBe(
+        '0x02f8720302843b9aca008504a817c80082520894b2bb2b958afa2e96dab3f3ce7162b87daea39017872386f26fc1000080c080a061a7b508904a02b32614101fcff8f3f0bacdaa875bf36ec558fab82b9e0181a7a0310cc4d60f43bd5514a24212df28aecaf56fa0aea458d4c7c74c9f4ca1fe5c0d'
+      );
+    });
+
     it('throws if the call to TrezorConnect fails', async () => {
       (TrezorConnect.ethereumSignTransaction as jest.MockedFunction<
         typeof TrezorConnect.ethereumSignTransaction

@@ -27,6 +27,7 @@ const convertPathToString = (path: number[]): string =>
     .join('/');
 
 export class Client {
+  isPaired = false;
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   constructor() {}
   hasActiveWallet = jest.fn().mockReturnValue(true);
@@ -34,6 +35,7 @@ export class Client {
     .fn()
     .mockImplementation(
       (_deviceID: string, callback: (err: Error | null, isPaired: boolean) => void) => {
+        this.isPaired = true;
         callback(null, true);
       }
     );

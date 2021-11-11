@@ -12,8 +12,73 @@ import { getFullPath } from '../../utils';
 import { GridPlusWallet, GridPlusWalletInstance } from './gridplus';
 
 const config = { name: 'MyCrypto', deviceID: 'foo', password: 'bar' };
+const origin = 'https://wallet.gridplus.io';
 
 describe('GridPlusWalletInstance', () => {
+  describe('pairing', () => {
+    it('handles pairing using popup if needed', async () => {
+      const postMessage = jest.fn();
+      window.open = jest.fn().mockReturnValue({ postMessage });
+      window.addEventListener = jest.fn().mockImplementation((_type, callback) => {
+        callback({ origin, data: JSON.stringify(config) });
+      });
+
+      const wallet = new GridPlusWallet({ name: config.name });
+      const instance = await wallet.getWallet(DEFAULT_ETH, 0);
+
+      expect(window.open).toHaveBeenCalled();
+      expect(postMessage).toHaveBeenCalled();
+      expect(window.addEventListener).toHaveBeenCalled();
+
+      await expect(instance.signTransaction(fTransactionRequest)).resolves.toBe(fSignedTx);
+    });
+
+    it('rejects if credentials are not in response', async () => {
+      const postMessage = jest.fn();
+      window.open = jest.fn().mockReturnValue({ postMessage });
+      window.addEventListener = jest.fn().mockImplementation((_type, callback) => {
+        callback({ origin, data: JSON.stringify({}) });
+      });
+
+      const wallet = new GridPlusWallet({ name: config.name });
+
+      await expect(wallet.getWallet(DEFAULT_ETH, 0)).rejects.toThrow(
+        'Invalid credentials returned from Lattice.'
+      );
+
+      expect(window.open).toHaveBeenCalled();
+      expect(postMessage).toHaveBeenCalled();
+      expect(window.addEventListener).toHaveBeenCalled();
+    });
+
+    it('rejects in case of errors', async () => {
+      const postMessage = jest.fn();
+      window.open = jest.fn().mockReturnValue({ postMessage });
+      window.addEventListener = jest.fn().mockImplementation((_type, callback) => {
+        callback({ origin: '', data: '' });
+        callback({ origin, data: '' });
+      });
+
+      const wallet = new GridPlusWallet({ name: config.name });
+
+      await expect(wallet.getWallet(DEFAULT_ETH, 0)).rejects.toThrow(
+        'Unexpected end of JSON input'
+      );
+
+      expect(window.open).toHaveBeenCalled();
+      expect(postMessage).toHaveBeenCalled();
+      expect(window.addEventListener).toHaveBeenCalled();
+    });
+
+    it('throws if popup fails', async () => {
+      window.open = jest.fn().mockReturnValue(null);
+
+      const wallet = new GridPlusWallet({ name: config.name });
+
+      await expect(wallet.getWallet(DEFAULT_ETH, 0)).rejects.toThrow('Popup blocked');
+    });
+  });
+
   describe('signTransaction', () => {
     it('signs a transaction', async () => {
       const wallet = new GridPlusWallet(config);
@@ -28,6 +93,17 @@ describe('GridPlusWalletInstance', () => {
 
       await expect(instance.signTransaction(fTransactionRequestEIP1559)).resolves.toBe(
         fSignedTxEIP1559
+      );
+    });
+
+    it('signs a EIP 1559 transaction with v = 0', async () => {
+      const wallet = new GridPlusWallet(config);
+      const instance = await wallet.getWallet(DEFAULT_ETH, 0);
+
+      await expect(
+        instance.signTransaction({ ...fTransactionRequestEIP1559, nonce: 2 })
+      ).resolves.toBe(
+        '0x02f8720302843b9aca008504a817c80082520894b2bb2b958afa2e96dab3f3ce7162b87daea39017872386f26fc1000080c080a061a7b508904a02b32614101fcff8f3f0bacdaa875bf36ec558fab82b9e0181a7a0310cc4d60f43bd5514a24212df28aecaf56fa0aea458d4c7c74c9f4ca1fe5c0d'
       );
     });
 
