@@ -73,7 +73,7 @@ const waitForPairing = (config: GridPlusConfiguration) => {
 };
 
 const ensureConnection = async (client: Client, config: GridPlusConfiguration) => {
-  if (client.isPaired) {
+  if (client.isPaired && client.hasActiveWallet()) {
     return;
   }
 
@@ -81,7 +81,7 @@ const ensureConnection = async (client: Client, config: GridPlusConfiguration) =
     const connect = promisify(client.connect).bind(client);
 
     const isPaired = await connect(config.deviceID);
-    if (isPaired && client.hasActiveWallet()) {
+    if (isPaired) {
       return;
     }
   }
