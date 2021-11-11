@@ -8,6 +8,7 @@ import {
   fTransactionRequestEIP1559
 } from '../../../.jest/__fixtures__';
 import { DEFAULT_ETH, LEDGER_LIVE_ETH } from '../../dpaths';
+import { getFullPath } from '../../utils';
 import { GridPlusWallet, GridPlusWalletInstance } from './gridplus';
 
 const config = { name: 'MyCrypto', deviceID: 'foo', password: 'bar' };
@@ -242,9 +243,10 @@ describe('GridPlusWallet', () => {
   describe('getExtendedKey', () => {
     it('throws an error', async () => {
       const wallet = new GridPlusWallet(config);
-      const instance = await wallet.getWallet(DEFAULT_ETH, 0);
 
-      await expect(() => instance.getPrivateKey()).rejects.toThrow('Method not implemented.');
+      await expect(() => wallet.getExtendedKey(getFullPath(DEFAULT_ETH, 0))).rejects.toThrow(
+        'Method not implemented.'
+      );
     });
   });
 
@@ -256,6 +258,17 @@ describe('GridPlusWallet', () => {
 
       expect(instance).toBeInstanceOf(GridPlusWalletInstance);
       expect(await instance.getAddress()).toBe('0xc6D5a3c98EC9073B54FA0969957Bd582e8D874bf');
+    });
+  });
+
+  describe('getCredentials', () => {
+    it('returns credentials', async () => {
+      const wallet = new GridPlusWallet(config);
+
+      expect(wallet.getCredentials()).toStrictEqual({
+        deviceID: config.deviceID,
+        password: config.password
+      });
     });
   });
 });

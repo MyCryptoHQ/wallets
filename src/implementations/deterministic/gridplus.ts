@@ -40,7 +40,8 @@ const getPrivateKey = (config: GridPlusConfiguration) => {
   return crypto.createHash('sha256').update(buf).digest();
 };
 
-const waitForPairing = (config: GridPlusConfiguration) => {
+// @todo Test!
+const waitForPairing = (config: GridPlusConfiguration): Promise<GridPlusCredentials> => {
   return new Promise((resolve, reject) => {
     const baseURL = 'https://wallet.gridplus.io';
     const url = `${baseURL}?keyring=${config.name}`;
@@ -52,7 +53,7 @@ const waitForPairing = (config: GridPlusConfiguration) => {
     popup.postMessage('GET_LATTICE_CREDS', baseURL);
 
     // PostMessage handler
-    function receiveMessage(event: any) {
+    function receiveMessage(event: MessageEvent) {
       // Ensure origin
       if (event.origin !== baseURL) {
         return;
@@ -200,7 +201,7 @@ export class GridPlusWallet extends HardwareWallet {
   async getClient(): Promise<Client> {
     const { deviceID, password, ...clientConfig } = this.config;
     if (deviceID === undefined || password === undefined) {
-      const result: any = await waitForPairing(this.config);
+      const result = await waitForPairing(this.config);
       this.config = { ...this.config, ...result };
     }
     if (this.client === undefined) {

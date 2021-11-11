@@ -1,7 +1,7 @@
 import { TransportStatusError } from '@ledgerhq/errors';
 
 import { WalletsErrorCode } from '../../types';
-import { standardizeTrezorErr, wrapLedgerError } from './errors';
+import { standardizeTrezorErr, wrapGridPlusError, wrapLedgerError } from './errors';
 
 describe('wrapLedgerError', () => {
   it('throws U2F timeout error', () => {
@@ -91,5 +91,21 @@ describe('standardizeTrezorErr', () => {
     });
     expect(err.errorCode).toBe(WalletsErrorCode.UNKNOWN);
     expect(err.message).toBe('Foo');
+  });
+});
+
+describe('wrapGridPlusError', () => {
+  it('throws timeout error', () => {
+    expect(() => wrapGridPlusError('Timeout waiting for device')).toThrow(
+      'Timeout waiting for device'
+    );
+  });
+
+  it('throws cancel error', () => {
+    expect(() => wrapGridPlusError('Request Declined by User')).toThrow('Request Declined by User');
+  });
+
+  it('throws unknown error', () => {
+    expect(() => wrapGridPlusError(new Error('Foo'))).toThrow('Foo');
   });
 });
