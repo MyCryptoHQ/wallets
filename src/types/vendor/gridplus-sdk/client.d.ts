@@ -2,12 +2,20 @@ declare module 'gridplus-sdk' {
   import type { UnsignedTransaction } from '@ethersproject/transactions';
   import type { Buffer } from 'buffer';
 
+  interface SignMessageOpts {
+    signerPath: number[];
+    protocol: 'signPersonal';
+    payload: string;
+  }
+
+  type SignTxOpts = {
+    signerPath: number[];
+    // @todo Improve
+  } & UnsignedTransaction;
+
   interface SignOpts {
     currency: 'ETH' | 'ETH_MSG' | 'BTC';
-    data: {
-      signerPath: number[];
-      // @todo Improve
-    } & UnsignedTransaction;
+    data: SignTxOpts | SignMessageOpts;
   }
 
   interface SignResult {
