@@ -73,21 +73,30 @@ const waitForPairing = (config: GridPlusConfiguration): Promise<GridPlusCredenti
   });
 };
 
-const ensureConnection = async (client: Client, config: GridPlusConfiguration) => {
-  if (client.isPaired && client.hasActiveWallet()) {
-    return;
+const getClient = async (config: GridPlusConfiguration, client?: Client) => {
+  if (client?.isPaired && client?.hasActiveWallet()) {
+    return { client, config };
   }
 
-  if (config.deviceID !== undefined && config.password !== undefined) {
+  const { deviceID, password, ...clientConfig } = config;
+  if (client && deviceID !== undefined && password !== undefined) {
     const connect = promisify(client.connect).bind(client);
 
-    const isPaired = await connect(config.deviceID);
+    const isPaired = await connect(deviceID);
     if (isPaired) {
-      return;
+      return { client, config };
     }
+  } else if (deviceID === undefined || password === undefined) {
+    const result = await waitForPairing(config);
+    config = { ...config, ...result };
   }
 
-  return waitForPairing(config);
+  if (client === undefined) {
+    const privKey = getPrivateKey(config);
+    client = new Client({ ...clientConfig, privKey, crypto });
+  }
+
+  return { client, config };
 };
 
 const getConvertedPath = (path: string) => {
@@ -102,11 +111,18 @@ const getConvertedPath = (path: string) => {
 
 export class GridPlusWalletInstance implements Wallet {
   constructor(
-    private readonly config: GridPlusConfiguration,
-    private readonly client: Client,
+    private config: GridPlusConfiguration,
+    private client: Client,
     private readonly path: string,
     private address?: TAddress
   ) {}
+
+  async getClient(): Promise<Client> {
+    const { client, config } = await getClient(this.config, this.client);
+    this.client = client;
+    this.config = config;
+    return this.client;
+  }
 
   async signTransaction(rawTx: TransactionRequest): Promise<string> {
     const { type, ...transaction } = sanitizeTx(rawTx);
@@ -118,7 +134,7 @@ export class GridPlusWalletInstance implements Wallet {
       );
     }
 
-    await ensureConnection(this.client, this.config);
+    this.client = await this.getClient();
 
     const sign = promisify(this.client.sign).bind(this.client);
 
@@ -159,9 +175,9 @@ export class GridPlusWalletInstance implements Wallet {
       signerPath: getConvertedPath(this.path)
     };
 
-    await ensureConnection(this.client, this.config);
+    const client = await this.getClient();
 
-    const sign = promisify(this.client.sign).bind(this.client);
+    const sign = promisify(client.sign).bind(client);
 
     const result = await sign({
       currency: 'ETH_MSG',
@@ -173,8 +189,8 @@ export class GridPlusWalletInstance implements Wallet {
 
   async getAddress(): Promise<TAddress> {
     if (!this.address) {
-      await ensureConnection(this.client, this.config);
-      const getAddresses = promisify(this.client.getAddresses).bind(this.client);
+      const client = await this.getClient();
+      const getAddresses = promisify(client.getAddresses).bind(client);
       const addresses = await getAddresses({
         startPath: getConvertedPath(this.path),
         n: 1,
@@ -199,15 +215,9 @@ export class GridPlusWallet extends HardwareWallet {
   private client?: Client;
 
   async getClient(): Promise<Client> {
-    const { deviceID, password, ...clientConfig } = this.config;
-    if (deviceID === undefined || password === undefined) {
-      const result = await waitForPairing(this.config);
-      this.config = { ...this.config, ...result };
-    }
-    if (this.client === undefined) {
-      const privKey = getPrivateKey(this.config);
-      this.client = new Client({ ...clientConfig, privKey, crypto });
-    }
+    const { client, config } = await getClient(this.config, this.client);
+    this.client = client;
+    this.config = config;
     return this.client;
   }
 
@@ -241,8 +251,7 @@ export class GridPlusWallet extends HardwareWallet {
     }
 
     const client = await this.getClient();
-    await ensureConnection(client, this.config);
-    const getAddresses = promisify(client.getAddresses).bind(this.client);
+    const getAddresses = promisify(client.getAddresses).bind(client);
     const dPath = getFullPath(path, offset);
     const addresses: string[] = await getAddresses({
       startPath: getConvertedPath(dPath),
