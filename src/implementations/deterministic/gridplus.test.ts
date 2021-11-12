@@ -79,9 +79,9 @@ describe('GridPlusWalletInstance', () => {
       await expect(wallet.getWallet(DEFAULT_ETH, 0)).rejects.toThrow('Popup blocked');
     });
 
-    it('throws on timeout', async () => {
+    it('throws on popup closed', async () => {
       const postMessage = jest.fn();
-      window.open = jest.fn().mockReturnValue({ postMessage });
+      window.open = jest.fn().mockReturnValue({ postMessage, closed: true });
       window.addEventListener = jest.fn();
 
       const wallet = new GridPlusWallet({ name: config.name });
@@ -89,7 +89,7 @@ describe('GridPlusWalletInstance', () => {
       const promise = wallet.getWallet(DEFAULT_ETH, 0);
       jest.runOnlyPendingTimers();
 
-      await expect(promise).rejects.toThrow('Popup timed out');
+      await expect(promise).rejects.toThrow('Popup closed');
 
       expect(window.open).toHaveBeenCalled();
       expect(postMessage).toHaveBeenCalled();
