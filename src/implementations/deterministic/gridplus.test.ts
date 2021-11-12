@@ -16,6 +16,7 @@ const origin = 'https://wallet.gridplus.io';
 
 describe('GridPlusWalletInstance', () => {
   describe('pairing', () => {
+    jest.useFakeTimers();
     it('handles pairing using popup if needed', async () => {
       const postMessage = jest.fn();
       window.open = jest.fn().mockReturnValue({ postMessage });
@@ -76,6 +77,23 @@ describe('GridPlusWalletInstance', () => {
       const wallet = new GridPlusWallet({ name: config.name });
 
       await expect(wallet.getWallet(DEFAULT_ETH, 0)).rejects.toThrow('Popup blocked');
+    });
+
+    it('throws on timeout', async () => {
+      const postMessage = jest.fn();
+      window.open = jest.fn().mockReturnValue({ postMessage });
+      window.addEventListener = jest.fn();
+
+      const wallet = new GridPlusWallet({ name: config.name });
+
+      const promise = wallet.getWallet(DEFAULT_ETH, 0);
+      jest.runOnlyPendingTimers();
+
+      await expect(promise).rejects.toThrow('Popup timed out');
+
+      expect(window.open).toHaveBeenCalled();
+      expect(postMessage).toHaveBeenCalled();
+      expect(window.addEventListener).toHaveBeenCalled();
     });
   });
 
