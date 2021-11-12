@@ -12,13 +12,12 @@ import { promisify } from 'util';
 import type { DerivationPath } from '../../dpaths';
 import type { DeterministicAddress, TAddress } from '../../types';
 import { WalletsError, WalletsErrorCode } from '../../types';
-import { addHexPrefix, getFullPath, sanitizeTx, timeout, toChecksumAddress } from '../../utils';
+import { addHexPrefix, getFullPath, sanitizeTx, toChecksumAddress } from '../../utils';
 import type { Wallet } from '../../wallet';
 import { wrapGridPlusError } from './errors';
 import { HardwareWallet } from './hardware-wallet';
 
 const HARDENED_OFFSET = 0x80000000;
-const POPUP_TIMEOUT = 30 * 1000;
 
 export interface GridPlusConfiguration extends GridPlusCredentials {
   // For client
@@ -42,39 +41,41 @@ const getPrivateKey = (config: GridPlusConfiguration) => {
 };
 
 const waitForPairing = (config: GridPlusConfiguration): Promise<GridPlusCredentials> => {
-  return timeout(
-    new Promise((resolve, reject) => {
-      const baseURL = 'https://wallet.gridplus.io';
-      const url = `${baseURL}?keyring=${config.name}`;
+  return new Promise((resolve, reject) => {
+    const baseURL = 'https://wallet.gridplus.io';
+    const url = `${baseURL}?keyring=${config.name}`;
 
-      const popup = window.open(url);
-      if (popup === null) {
-        throw new WalletsError('Popup blocked', WalletsErrorCode.HW_POPUP_BLOCKED);
+    const popup = window.open(url);
+    if (popup === null) {
+      throw new WalletsError('Popup blocked', WalletsErrorCode.HW_POPUP_BLOCKED);
+    }
+    const timer = setInterval(function () {
+      if (popup.closed) {
+        clearInterval(timer);
+        reject(new WalletsError('Popup closed', WalletsErrorCode.CANCELLED));
       }
-      popup.postMessage('GET_LATTICE_CREDS', baseURL);
+    }, 1000);
+    popup.postMessage('GET_LATTICE_CREDS', baseURL);
 
-      // PostMessage handler
-      function receiveMessage(event: MessageEvent) {
-        // Ensure origin
-        if (event.origin !== baseURL) {
-          return;
-        }
-        // Parse response data
-        try {
-          const data = JSON.parse(event.data);
-          if (data.deviceID === undefined || data.password === undefined) {
-            return reject(Error('Invalid credentials returned from Lattice.'));
-          }
-          return resolve(data);
-        } catch (err) {
-          return reject(err);
-        }
+    // PostMessage handler
+    function receiveMessage(event: MessageEvent) {
+      // Ensure origin
+      if (event.origin !== baseURL) {
+        return;
       }
-      window.addEventListener('message', receiveMessage, false);
-    }),
-    POPUP_TIMEOUT,
-    new WalletsError('Popup timed out', WalletsErrorCode.TIMEOUT)
-  );
+      // Parse response data
+      try {
+        const data = JSON.parse(event.data);
+        if (data.deviceID === undefined || data.password === undefined) {
+          return reject(Error('Invalid credentials returned from Lattice.'));
+        }
+        return resolve(data);
+      } catch (err) {
+        return reject(err);
+      }
+    }
+    window.addEventListener('message', receiveMessage, false);
+  });
 };
 
 const getClient = async (config: GridPlusConfiguration, client?: Client) => {
