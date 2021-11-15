@@ -1,6 +1,6 @@
 {
   "name": "@mycrypto/wallets",
-  "version": "1.3.5",
+  "version": "1.4.0",
   "description": "Wallet abstractions to be used throughout the MyCrypto product suite.",
   "repository": "MyCryptoHQ/wallets",
   "author": "MyCrypto",
@@ -48,7 +48,7 @@
     "@ledgerhq/hw-transport-webhid": "6.4.1",
     "@ledgerhq/hw-transport-webusb": "6.6.0",
     "ethereumjs-wallet": "1.0.1",
-    "gridplus-sdk": "0.8.7",
+    "gridplus-sdk": "0.9.1",
     "superstruct": "0.15.1",
     "trezor-connect": "8.2.0"
   },

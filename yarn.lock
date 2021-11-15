@@ -3915,10 +3915,10 @@ graceful-fs@^4.1.11, graceful-fs@^4.1.2, graceful-fs@^4.2.4:
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.6.tgz#ff040b2b0853b23c3d31027523706f1885d76bee"
   integrity sha512-nTnJ528pbqxYanhpDYsi4Rd8MAeaBA67+RZ10CM1m3bTAVFEDcd5AuA4a6W5YkGZ1iNXHzZz8T6TBKLeBuNriQ==
 
-gridplus-sdk@0.8.7:
-  version "0.8.7"
-  resolved "https://registry.yarnpkg.com/gridplus-sdk/-/gridplus-sdk-0.8.7.tgz#c15b3cfaa5ef6c076083c820e67c5653195502b5"
-  integrity sha512-+onUgulKe+m3oKuxC73ny9oDriHugTK/bNTVyin1ILSFkibrH453ttgoGXEaOas+azhy+++P+kj+sD9X6Tmn0w==
+gridplus-sdk@0.9.1:
+  version "0.9.1"
+  resolved "https://registry.yarnpkg.com/gridplus-sdk/-/gridplus-sdk-0.9.1.tgz#f6b929be316d9caaae44dcf25b72095b53d29cd3"
+  integrity sha512-Ose7/7HBGTjKaKu5Cgaor05pVgrTdFfjax5XhisSLLgRy9hB7I3hEYD+qLcItSWeqtUxxTp9kXiz3xI+Cn58wA==
   dependencies:
     aes-js "^3.1.1"
     bech32 "^2.0.0"
