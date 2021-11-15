@@ -19,13 +19,13 @@ import {
   safeJSONParse,
   sanitizeTx,
   toChecksumAddress,
-  keys
+  keys,
+  getConvertedPath
 } from '../../utils';
 import type { Wallet } from '../../wallet';
 import { wrapGridPlusError } from './errors';
 import { HardwareWallet } from './hardware-wallet';
 
-const HARDENED_OFFSET = 0x80000000;
 const POPUP_BASE_URL = 'https://wallet.gridplus.io';
 
 export interface GridPlusConfiguration extends GridPlusCredentials {
@@ -109,16 +109,6 @@ const getClient = async (config: GridPlusConfiguration, client?: Client) => {
   return { client, config };
 };
 
-const getConvertedPath = (path: string) => {
-  const array = path.split('/').slice(1);
-  return array.map((a) => {
-    const isHardened = a.includes("'");
-    const offset = isHardened ? HARDENED_OFFSET : 0;
-    const sliced = isHardened ? a.slice(0, -1) : a;
-    return offset + parseInt(sliced, 10);
-  });
-};
-
 export class GridPlusWalletInstance implements Wallet {
   constructor(
     private config: GridPlusConfiguration,
@@ -171,7 +161,6 @@ export class GridPlusWalletInstance implements Wallet {
     }).catch(wrapGridPlusError);
 
     const signature: SignatureLike = {
-      // @todo Make sure this works for high chain id networks
       // 0 is returned as an empty buffer
       v: result.sig.v.length === 0 ? 0 : parseInt(result.sig.v.toString('hex'), 16),
       r: addHexPrefix(result.sig.r),
