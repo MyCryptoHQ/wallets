@@ -279,3 +279,5 @@ export const LEDGER_DERIVATION_PATHS: DerivationPath[] = [
 export const TREZOR_DERIVATION_PATHS: DerivationPath[] = [
   ...ALL_DERIVATION_PATHS.filter((path) => !path.isHardened)
 ];
+
+export const GRIDPLUS_DERIVATION_PATHS: DerivationPath[] = [DEFAULT_ETH];

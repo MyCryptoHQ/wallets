@@ -34,3 +34,15 @@ export const getDerivationPath = (
     return [derivationPath, parseInt(index, 10)];
   }
 };
+
+const HARDENED_OFFSET = 0x80000000;
+
+export const getConvertedPath = (path: string): number[] => {
+  const array = path.split('/').slice(1);
+  return array.map((a) => {
+    const isHardened = a.includes("'");
+    const offset = isHardened ? HARDENED_OFFSET : 0;
+    const sliced = isHardened ? a.slice(0, -1) : a;
+    return offset + parseInt(sliced, 10);
+  });
+};

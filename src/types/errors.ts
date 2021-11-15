@@ -22,7 +22,8 @@ export enum WalletsErrorCode {
   MISSING_ARGUMENTS,
   HW_WRONG_APP,
   HW_U2F_NOT_SUPPORTED,
-  HW_IFRAME_BLOCKED
+  HW_IFRAME_BLOCKED,
+  HW_POPUP_BLOCKED
 }
 export class WalletsError extends Error {
   errorCode: WalletsErrorCode;
