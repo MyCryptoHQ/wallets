@@ -28,8 +28,6 @@ const convertPathToString = (path: number[]): string =>
 
 export class Client {
   isPaired = false;
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  constructor() {}
   hasActiveWallet = jest.fn().mockReturnValue(true);
   connect = jest
     .fn()

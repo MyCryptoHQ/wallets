@@ -12,12 +12,19 @@ import { promisify } from 'util';
 import type { DerivationPath } from '../../dpaths';
 import type { DeterministicAddress, TAddress } from '../../types';
 import { WalletsError, WalletsErrorCode } from '../../types';
-import { addHexPrefix, getFullPath, sanitizeTx, toChecksumAddress } from '../../utils';
+import {
+  addHexPrefix,
+  getFullPath,
+  safeJSONParse,
+  sanitizeTx,
+  toChecksumAddress
+} from '../../utils';
 import type { Wallet } from '../../wallet';
 import { wrapGridPlusError } from './errors';
 import { HardwareWallet } from './hardware-wallet';
 
 const HARDENED_OFFSET = 0x80000000;
+const POPUP_BASE_URL = 'https://wallet.gridplus.io';
 
 export interface GridPlusConfiguration extends GridPlusCredentials {
   // For client
@@ -42,14 +49,14 @@ const getPrivateKey = (config: GridPlusConfiguration) => {
 
 const waitForPairing = (config: GridPlusConfiguration): Promise<GridPlusCredentials> => {
   return new Promise((resolve, reject) => {
-    const baseURL = 'https://wallet.gridplus.io';
+    const baseURL = POPUP_BASE_URL;
     const url = `${baseURL}?keyring=${config.name}`;
 
     const popup = window.open(url);
     if (popup === null) {
       throw new WalletsError('Popup blocked', WalletsErrorCode.HW_POPUP_BLOCKED);
     }
-    const timer = setInterval(function () {
+    const timer = setInterval(() => {
       if (popup.closed) {
         clearInterval(timer);
         reject(new WalletsError('Popup closed', WalletsErrorCode.CANCELLED));
@@ -57,23 +64,19 @@ const waitForPairing = (config: GridPlusConfiguration): Promise<GridPlusCredenti
     }, 1000);
     popup.postMessage('GET_LATTICE_CREDS', baseURL);
 
-    // PostMessage handler
-    function receiveMessage(event: MessageEvent) {
-      // Ensure origin
+    const receiveMessage = (event: MessageEvent) => {
       if (event.origin !== baseURL) {
         return;
       }
-      // Parse response data
-      try {
-        const data = JSON.parse(event.data);
-        if (data.deviceID === undefined || data.password === undefined) {
-          return reject(Error('Invalid credentials returned from Lattice.'));
-        }
-        return resolve(data);
-      } catch (err) {
+      const [err, data] = safeJSONParse<GridPlusCredentials>(event.data);
+      if (err !== null) {
         return reject(err);
       }
-    }
+      if (data?.deviceID === undefined || data?.password === undefined) {
+        return reject(Error('Invalid credentials returned from Lattice.'));
+      }
+      return resolve(data);
+    };
     window.addEventListener('message', receiveMessage, false);
   });
 };
@@ -110,7 +113,7 @@ const getConvertedPath = (path: string) => {
     const isHardened = a.includes("'");
     const offset = isHardened ? HARDENED_OFFSET : 0;
     const sliced = isHardened ? a.slice(0, a.length - 1) : a;
-    return offset + parseInt(sliced);
+    return offset + parseInt(sliced, 10);
   });
 };
 
