@@ -153,11 +153,9 @@ export class GridPlusWalletInstance implements Wallet {
     const hexlified = keys<Omit<UnsignedTransaction, 'type' | 'accessList'>>(preHexTx).reduce(
       (acc, cur) => {
         const value = preHexTx[cur];
-        if (value === undefined) {
-          return acc;
-        }
-        const hex = addHexPrefix(hexlify(value, { hexPad: 'left' }));
-        return { ...acc, [cur]: hex };
+        return value === undefined
+          ? acc
+          : { ...acc, [cur]: addHexPrefix(hexlify(value, { hexPad: 'left' })) };
       },
       {}
     );
