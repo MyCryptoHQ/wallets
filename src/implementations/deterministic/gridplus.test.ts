@@ -114,6 +114,15 @@ describe('GridPlusWalletInstance', () => {
       );
     });
 
+    it('signs a transaction without data', async () => {
+      const wallet = new GridPlusWallet(config);
+      const instance = await wallet.getWallet(DEFAULT_ETH, 0);
+
+      await expect(
+        instance.signTransaction({ ...fTransactionRequestEIP1559, data: undefined })
+      ).resolves.toBe(fSignedTxEIP1559);
+    });
+
     it('signs a EIP 1559 transaction with v = 0', async () => {
       const wallet = new GridPlusWallet(config);
       const instance = await wallet.getWallet(DEFAULT_ETH, 0);
