@@ -4,6 +4,7 @@ import type { SignatureLike } from '@ethersproject/bytes';
 import { hexlify } from '@ethersproject/bytes';
 import type { HDNode } from '@ethersproject/hdnode';
 import { toUtf8Bytes } from '@ethersproject/strings';
+import type { UnsignedTransaction } from '@ethersproject/transactions';
 import { serialize as serializeTransaction } from '@ethersproject/transactions';
 import crypto from 'crypto';
 import { Client } from 'gridplus-sdk';
@@ -17,7 +18,8 @@ import {
   getFullPath,
   safeJSONParse,
   sanitizeTx,
-  toChecksumAddress
+  toChecksumAddress,
+  keys
 } from '../../utils';
 import type { Wallet } from '../../wallet';
 import { wrapGridPlusError } from './errors';
@@ -112,7 +114,7 @@ const getConvertedPath = (path: string) => {
   return array.map((a) => {
     const isHardened = a.includes("'");
     const offset = isHardened ? HARDENED_OFFSET : 0;
-    const sliced = isHardened ? a.slice(0, a.length - 1) : a;
+    const sliced = isHardened ? a.slice(0, -1) : a;
     return offset + parseInt(sliced, 10);
   });
 };
@@ -146,17 +148,25 @@ export class GridPlusWalletInstance implements Wallet {
 
     const sign = promisify(this.client.sign).bind(this.client);
 
-    const hexlified = Object.keys(transaction).reduce((acc, cur) => {
-      // @ts-expect-error The linter doesn't like indexing via strings
-      const value = transaction[cur];
-      const hex = addHexPrefix(hexlify(value, { hexPad: 'left' }));
-      return { ...acc, [cur]: hex };
-    }, {});
+    const { accessList, ...preHexTx } = transaction;
+
+    const hexlified = keys<Omit<UnsignedTransaction, 'type' | 'accessList'>>(preHexTx).reduce(
+      (acc, cur) => {
+        const value = preHexTx[cur];
+        if (value === undefined) {
+          return acc;
+        }
+        const hex = addHexPrefix(hexlify(value, { hexPad: 'left' }));
+        return { ...acc, [cur]: hex };
+      },
+      {}
+    );
 
     const result = await sign({
       currency: 'ETH',
       data: {
         ...hexlified,
+        ...(accessList ? { accessList } : {}),
         type,
         signerPath: getConvertedPath(this.path)
       }
