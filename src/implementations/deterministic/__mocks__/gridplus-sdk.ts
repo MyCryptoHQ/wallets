@@ -29,12 +29,24 @@ const convertPathToString = (path: number[]): string =>
 export class Client {
   isPaired = false;
   hasActiveWallet = jest.fn().mockReturnValue(true);
+  pair = jest
+    .fn()
+    .mockImplementation(
+      (_secret: string, callback: (err: Error | null, hasActiveWallet: boolean) => void) => {
+        // For now we only pair and expect it to fail
+        callback(new Error('Failed to pair'), false);
+      }
+    );
   connect = jest
     .fn()
     .mockImplementation(
-      (_deviceID: string, callback: (err: Error | null, isPaired: boolean) => void) => {
-        this.isPaired = true;
-        callback(null, true);
+      (deviceID: string, callback: (err: Error | null, isPaired: boolean) => void) => {
+        if (deviceID === 'foo') {
+          this.isPaired = true;
+          callback(null, true);
+        } else {
+          callback(null, false);
+        }
       }
     );
   sign = jest
