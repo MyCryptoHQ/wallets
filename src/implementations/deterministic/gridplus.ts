@@ -38,8 +38,6 @@ export interface GridPlusCredentials {
   password?: string;
 }
 
-// @todo Cleanup / polish
-
 const getPrivateKey = (config: GridPlusConfiguration) => {
   const buf = Buffer.concat([
     Buffer.from(config.password!),
@@ -83,30 +81,36 @@ const waitForPairing = (config: GridPlusConfiguration): Promise<GridPlusCredenti
   });
 };
 
-const getClient = async (config: GridPlusConfiguration, client?: Client) => {
+const getClient = async (
+  config: GridPlusConfiguration,
+  client?: Client
+): Promise<{ config: GridPlusConfiguration; client: Client }> => {
   if (client?.isPaired && client?.hasActiveWallet()) {
     return { client, config };
   }
 
   const { deviceID, password, ...clientConfig } = config;
-  if (client && deviceID !== undefined && password !== undefined) {
-    const connect = promisify(client.connect).bind(client);
 
-    const isPaired = await connect(deviceID);
-    if (isPaired) {
-      return { client, config };
-    }
-  } else if (deviceID === undefined || password === undefined) {
-    const result = await waitForPairing(config);
-    config = { ...config, ...result };
-  }
-
-  if (client === undefined) {
+  if (client === undefined && deviceID !== undefined && password !== undefined) {
     const privKey = getPrivateKey(config);
     client = new Client({ ...clientConfig, privKey, crypto });
   }
 
-  return { client, config };
+  if (client && deviceID !== undefined && password !== undefined) {
+    const connect = promisify(client.connect).bind(client);
+
+    const isPaired = await connect(deviceID).catch(wrapGridPlusError);
+    if (isPaired) {
+      return { client, config };
+    } else {
+      // Hack to dismiss pairing screen
+      const pair = promisify(client.pair).bind(client);
+      await pair('').catch(() => null);
+    }
+  }
+
+  const result = await waitForPairing(config);
+  return getClient({ ...clientConfig, ...result }, client);
 };
 
 export class GridPlusWalletInstance implements Wallet {
