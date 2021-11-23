@@ -34,6 +34,23 @@ describe('GridPlusWalletInstance', () => {
       await expect(instance.signTransaction(fTransactionRequest)).resolves.toBe(fSignedTx);
     });
 
+    it('handles pairing using popup if invalid credentials', async () => {
+      const postMessage = jest.fn();
+      window.open = jest.fn().mockReturnValue({ postMessage });
+      window.addEventListener = jest.fn().mockImplementation((_type, callback) => {
+        callback({ origin, data: JSON.stringify(config) });
+      });
+
+      const wallet = new GridPlusWallet({ ...config, deviceID: 'somethingelse' });
+      const instance = await wallet.getWallet(DEFAULT_ETH, 0);
+
+      expect(window.open).toHaveBeenCalled();
+      expect(postMessage).toHaveBeenCalled();
+      expect(window.addEventListener).toHaveBeenCalled();
+
+      await expect(instance.signTransaction(fTransactionRequest)).resolves.toBe(fSignedTx);
+    });
+
     it('rejects if credentials are not in response', async () => {
       const postMessage = jest.fn();
       window.open = jest.fn().mockReturnValue({ postMessage });
