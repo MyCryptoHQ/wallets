@@ -147,9 +147,9 @@ export const DEFAULT_VOLTA: DerivationPath = {
   path: "m/44'/73799'/0'/0/<account>"
 };
 
-export const DEFAULT_AVAX: DerivationPath = {
-  name: 'Default (AVAX)',
-  path: "m/44'/9000'/0'/0/<account>"
+export const DEFAULT_AVAXC: DerivationPath = {
+  name: 'Default (AVAXC)',
+  path: "m/44'/9005'/0'/0/<account>"
 };
 
 export const DEFAULT_EVRICE: DerivationPath = {
@@ -184,7 +184,7 @@ export const DEFAULT_POLYGON: DerivationPath = {
 
 export const DEFAULT_BSC: DerivationPath = {
   name: 'Default (BSC)',
-  path: "m/44'/714'/0'/0/<account>"
+  path: "m/44'/9006'/0'/0/<account>"
 };
 
 export const DEFAULT_XDAI: DerivationPath = {
@@ -195,6 +195,11 @@ export const DEFAULT_XDAI: DerivationPath = {
 export const DEFAULT_HECO: DerivationPath = {
   name: 'Default (HECO)',
   path: "m/44'/1010'/0'/0/<account>"
+};
+
+export const DEFAULT_FTM: DerivationPath = {
+  name: 'Default (FTM)',
+  path: "m/44'/1007'/0'/0/<account>"
 };
 
 export const LEDGER_LIVE_ETH: DerivationPath = {
@@ -248,7 +253,7 @@ export const ALL_DERIVATION_PATHS: DerivationPath[] = [
   DEFAULT_VOLTA,
   LEDGER_LIVE_ETH,
   LEDGER_LIVE_ETC,
-  DEFAULT_AVAX,
+  DEFAULT_AVAXC,
   DEFAULT_EVRICE,
   DEFAULT_ARTIS_SIGMA1,
   DEFAULT_POA,
@@ -257,7 +262,8 @@ export const ALL_DERIVATION_PATHS: DerivationPath[] = [
   DEFAULT_POLYGON,
   DEFAULT_BSC,
   DEFAULT_XDAI,
-  DEFAULT_HECO
+  DEFAULT_HECO,
+  DEFAULT_FTM
 ];
 
 /**
