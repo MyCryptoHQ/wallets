@@ -29,6 +29,9 @@
     "prepare": "simple-git-hooks",
     "prepack": "yarn build"
   },
+  "resolutions": {
+    "npmlog": "6.0.0"
+  },
   "dependencies": {
     "@ethersproject/abstract-provider": "5.5.1",
     "@ethersproject/address": "5.5.0",
