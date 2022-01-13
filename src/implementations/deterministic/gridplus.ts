@@ -202,8 +202,7 @@ export class GridPlusWalletInstance implements Wallet {
       const getAddresses = promisify(client.getAddresses).bind(client);
       const addresses = await getAddresses({
         startPath: getConvertedPath(this.path),
-        n: 1,
-        skipCache: true
+        n: 1
       }).catch(wrapGridPlusError);
 
       this.address = addresses[0] as TAddress;
@@ -264,8 +263,7 @@ export class GridPlusWallet extends HardwareWallet {
     const dPath = getFullPath(path, offset);
     const addresses: string[] = await getAddresses({
       startPath: getConvertedPath(dPath),
-      n: limit,
-      skipCache: true
+      n: limit
     }).catch(wrapGridPlusError);
 
     return addresses.map((address, i) => {

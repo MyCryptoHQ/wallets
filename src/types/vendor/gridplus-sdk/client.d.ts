@@ -29,7 +29,6 @@ declare module 'gridplus-sdk' {
   interface AddressesOpts {
     startPath: number[];
     n: number;
-    skipCache: boolean;
   }
 
   export class Client {
