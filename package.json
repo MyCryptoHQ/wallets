@@ -62,7 +62,7 @@
     "@babel/plugin-proposal-optional-chaining": "7.13.12",
     "@babel/preset-env": "^7.13.12",
     "@babel/preset-typescript": "^7.13.0",
-    "@ledgerhq/hw-transport-mocker": "6.3.0",
+    "@ledgerhq/hw-transport-mocker": "6.20.0",
     "@types/jest": "^26.0.22",
     "@types/ledgerhq__hw-transport-u2f": "4.21.2",
     "@typescript-eslint/eslint-plugin": "^4.18.0",
