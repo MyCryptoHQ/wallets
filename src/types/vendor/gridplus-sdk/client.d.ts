@@ -1,7 +1,8 @@
-declare module 'gridplus-sdk' {
-  import type { UnsignedTransaction } from '@ethersproject/transactions';
-  import type { Buffer } from 'buffer';
+import type { UnsignedTransaction } from '@ethersproject/transactions';
+import type { Buffer } from 'buffer';
+import sdk from 'gridplus-sdk';
 
+declare module 'gridplus-sdk' {
   interface SignMessageOpts {
     signerPath: number[];
     protocol: 'signPersonal';
@@ -31,13 +32,12 @@ declare module 'gridplus-sdk' {
     n: number;
   }
 
-  export class Client {
-    constructor(options: { baseUrl?: string; crypto; name?: string; privKey?: Buffer });
-    isPaired: boolean;
-    connect(deviceID: string, callback: (err: Error | null, isPaired: boolean) => void): void;
-    sign(opts: SignOpts, callback: (err: Error | null, data: SignResult) => void): void;
-    pair(secret: string, callback: (err: Error | null, hasActiveWallet: boolean) => void): void;
-    getAddresses(opts: AddressesOpts, callback: (err: Error | null, data: string[]) => void): void;
-    hasActiveWallet(): boolean;
+  export class Client extends sdk.Client {
+    getActiveWallet(): {
+      uid: Buffer;
+      name: Buffer;
+      capabilities: number;
+      external: boolean;
+    } | null;
   }
 }
