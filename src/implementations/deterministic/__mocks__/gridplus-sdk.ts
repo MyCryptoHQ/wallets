@@ -3,13 +3,8 @@ import { HDNode } from '@ethersproject/hdnode';
 import type { Transaction } from '@ethersproject/transactions';
 import { parse } from '@ethersproject/transactions';
 import { Wallet } from '@ethersproject/wallet';
-import type {
-  AddressesOpts,
-  SignMessageOpts,
-  SignOpts,
-  SignResult,
-  SignTxOpts
-} from 'gridplus-sdk';
+import { Buffer } from 'buffer';
+import type { AddressesOpts, SignMessageOpts, SignOpts, SignTxOpts } from 'gridplus-sdk';
 
 import { fMnemonicPhrase } from '../../../../.jest/__fixtures__';
 import { getPathPrefix, stripHexPrefix, toChecksumAddress } from '../../../utils';
@@ -28,86 +23,69 @@ const convertPathToString = (path: number[]): string =>
 
 export class Client {
   isPaired = false;
-  hasActiveWallet = jest.fn().mockReturnValue(true);
-  pair = jest
-    .fn()
-    .mockImplementation(
-      (_secret: string, callback: (err: Error | null, hasActiveWallet: boolean) => void) => {
-        // For now we only pair and expect it to fail
-        callback(new Error('Failed to pair'), false);
-      }
-    );
-  connect = jest
-    .fn()
-    .mockImplementation(
-      (deviceID: string, callback: (err: Error | null, isPaired: boolean) => void) => {
-        if (deviceID === 'foo') {
-          this.isPaired = true;
-          callback(null, true);
-        } else {
-          callback(null, false);
+  getActiveWallet = jest.fn().mockReturnValue({ uid: Buffer.from('0') });
+  pair = jest.fn().mockImplementation(async (_secret: string) => {
+    // For now we only pair and expect it to fail
+    throw new Error('Failed to pair');
+  });
+  connect = jest.fn().mockImplementation(async (deviceID: string) => {
+    if (deviceID === 'foo') {
+      this.isPaired = true;
+      return true;
+    } else {
+      return false;
+    }
+  });
+  sign = jest.fn().mockImplementation(async (opts: SignOpts) => {
+    const path = convertPathToString(opts.data.signerPath);
+    const childNode = hdNode.derivePath(path);
+    const wallet = new Wallet(childNode.privateKey);
+    if (opts.currency === 'ETH') {
+      const { signerPath, chainId, ...transaction } = opts.data as SignTxOpts;
+
+      const isEIP1559 =
+        transaction.maxFeePerGas !== undefined && transaction.maxPriorityFeePerGas !== undefined;
+
+      const signedTransaction = await wallet.signTransaction({
+        ...transaction,
+        chainId: parseInt((chainId as unknown) as string, 16),
+        type: isEIP1559 ? 2 : 0
+      });
+      const { v, r, s } = parse(signedTransaction) as Required<Transaction>;
+      return {
+        sig: {
+          // eslint-disable-next-line no-restricted-globals
+          v: v === 0 ? Buffer.from([]) : Buffer.from([v]),
+          r: stripHexPrefix(r),
+          s: stripHexPrefix(s)
         }
-      }
-    );
-  sign = jest
-    .fn()
-    .mockImplementation(
-      async (opts: SignOpts, callback: (err: Error | null, data: SignResult) => void) => {
-        const path = convertPathToString(opts.data.signerPath);
-        const childNode = hdNode.derivePath(path);
-        const wallet = new Wallet(childNode.privateKey);
-        if (opts.currency === 'ETH') {
-          const { signerPath, chainId, ...transaction } = opts.data as SignTxOpts;
+      };
+    } else if (opts.currency === 'ETH_MSG') {
+      const signMessageOpts = opts.data as SignMessageOpts;
+      const signature = await wallet.signMessage(arrayify(signMessageOpts.payload));
+      const { v, r, s } = splitSignature(signature);
 
-          const isEIP1559 =
-            transaction.maxFeePerGas !== undefined &&
-            transaction.maxPriorityFeePerGas !== undefined;
-
-          const signedTransaction = await wallet.signTransaction({
-            ...transaction,
-            chainId: parseInt((chainId as unknown) as string, 16),
-            type: isEIP1559 ? 2 : 0
-          });
-          const { v, r, s } = parse(signedTransaction) as Required<Transaction>;
-          callback(null, {
-            sig: {
-              // eslint-disable-next-line no-restricted-globals
-              v: v === 0 ? Buffer.from([]) : Buffer.from([v]),
-              r: stripHexPrefix(r),
-              s: stripHexPrefix(s)
-            }
-          });
-        } else if (opts.currency === 'ETH_MSG') {
-          const signMessageOpts = opts.data as SignMessageOpts;
-          const signature = await wallet.signMessage(arrayify(signMessageOpts.payload));
-          const { v, r, s } = splitSignature(signature);
-
-          callback(null, {
-            sig: {
-              // eslint-disable-next-line no-restricted-globals
-              v: v === 0 ? Buffer.from([]) : Buffer.from([v]),
-              r: stripHexPrefix(r),
-              s: stripHexPrefix(s)
-            }
-          });
+      return {
+        sig: {
+          // eslint-disable-next-line no-restricted-globals
+          v: v === 0 ? Buffer.from([]) : Buffer.from([v]),
+          r: stripHexPrefix(r),
+          s: stripHexPrefix(s)
         }
-      }
-    );
-  getAddresses = jest
-    .fn()
-    .mockImplementation(
-      (opts: AddressesOpts, callback: (err: Error | null, data: string[]) => void) => {
-        const path = convertPathToString(opts.startPath);
-        const indices = path.split('/');
-        const offset = parseInt(indices[indices.length - 1]);
+      };
+    }
+  });
+  getAddresses = jest.fn().mockImplementation(async (opts: AddressesOpts) => {
+    const path = convertPathToString(opts.startPath);
+    const indices = path.split('/');
+    const offset = parseInt(indices[indices.length - 1]);
 
-        const masterNode = hdNode.derivePath(getPathPrefix(path));
-        const result = new Array(opts.n).fill(undefined).map((_, i) => {
-          const index = offset + i;
-          const node = masterNode.derivePath(index.toString(10));
-          return toChecksumAddress(node.address);
-        });
-        callback(null, result);
-      }
-    );
+    const masterNode = hdNode.derivePath(getPathPrefix(path));
+    const result = new Array(opts.n).fill(undefined).map((_, i) => {
+      const index = offset + i;
+      const node = masterNode.derivePath(index.toString(10));
+      return toChecksumAddress(node.address);
+    });
+    return result;
+  });
 }
