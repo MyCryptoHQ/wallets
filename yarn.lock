@@ -3732,10 +3732,10 @@ graceful-fs@^4.1.11, graceful-fs@^4.1.2, graceful-fs@^4.2.4:
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.6.tgz#ff040b2b0853b23c3d31027523706f1885d76bee"
   integrity sha512-nTnJ528pbqxYanhpDYsi4Rd8MAeaBA67+RZ10CM1m3bTAVFEDcd5AuA4a6W5YkGZ1iNXHzZz8T6TBKLeBuNriQ==
 
-gridplus-sdk@1.3.3:
-  version "1.3.3"
-  resolved "https://registry.yarnpkg.com/gridplus-sdk/-/gridplus-sdk-1.3.3.tgz#95e1d1b25ffdafa95c06a054720873bdd7b5d154"
-  integrity sha512-WvAZpm2vPKNLr5oW3TO0HnVG9G1cj9lzxSNgn+ML36NoVnL1KbxJSfNWXPfcWHTdCDda1Q6Y8f4xpegKBcxy8w==
+gridplus-sdk@1.3.4:
+  version "1.3.4"
+  resolved "https://registry.yarnpkg.com/gridplus-sdk/-/gridplus-sdk-1.3.4.tgz#6769eb11fdc33a77c015eb3209e4065ae24d2875"
+  integrity sha512-ZkaObVzOh76lfwL9XGH1icJVGZAiRf70Qn45mc/hWKg+U9NLAgGPaLhYcBLtHw4SvlvMElBIy4XVSIdaxZJJAw==
   dependencies:
     "@ethereumjs/common" "2.4.0"
     "@ethereumjs/tx" "3.3.0"
