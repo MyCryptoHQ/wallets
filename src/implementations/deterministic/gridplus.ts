@@ -7,7 +7,8 @@ import { toUtf8Bytes } from '@ethersproject/strings';
 import type { UnsignedTransaction } from '@ethersproject/transactions';
 import { serialize as serializeTransaction } from '@ethersproject/transactions';
 import crypto from 'crypto';
-import { Client } from 'gridplus-sdk';
+import { Client, Utils, Constants } from 'gridplus-sdk';
+import rlp from 'rlp';
 
 import type { DerivationPath } from '../../dpaths';
 import type { DeterministicAddress, TAddress } from '../../types';
@@ -135,6 +136,33 @@ export class GridPlusWalletInstance implements Wallet {
     }
 
     const client = await this.getClient();
+    const fwVersion = client.getFwVersion();
+
+    let txPayloadWithDecoder;
+
+    if (fwVersion && (fwVersion.major > 0 || fwVersion.minor >= 15)) {
+      const payload = type !== null ? transaction : rlp.encode(Object.values(transaction));
+
+      const to = transaction.to?.toString() ?? '';
+
+      const callDataDecoder =
+        to !== null || to !== undefined
+          ? await Utils.fetchCalldataDecoder(
+              transaction.data?.toString() ?? '',
+              to,
+              transaction.chainId
+            )
+          : undefined;
+
+      txPayloadWithDecoder = {
+        payload,
+        curveType: Constants.SIGNING.CURVES.SECP256K1,
+        hashType: Constants.SIGNING.HASHES.KECCAK256,
+        encodingType: Constants.SIGNING.ENCODINGS.EVM,
+        signerPath: getConvertedPath(this.path),
+        decoder: callDataDecoder?.def
+      };
+    }
 
     const { accessList, ...preHexTx } = transaction;
 
@@ -155,7 +183,8 @@ export class GridPlusWalletInstance implements Wallet {
           ...hexlified,
           ...(accessList ? { accessList } : {}),
           type,
-          signerPath: getConvertedPath(this.path)
+          signerPath: getConvertedPath(this.path),
+          ...txPayloadWithDecoder
         }
       })
       .catch(wrapGridPlusError);

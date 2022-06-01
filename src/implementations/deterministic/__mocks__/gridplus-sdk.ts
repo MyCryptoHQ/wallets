@@ -21,9 +21,32 @@ const convertPathToString = (path: number[]): string =>
     })
     .join('/');
 
+export const Utils = {
+  fetchCalldataDecoder: jest.fn()
+};
+
+export const Constants = {
+  SIGNING: {
+    HASHES: {
+      NONE: 0,
+      KECCAK256: 0,
+      SHA256: 0
+    },
+    CURVES: {
+      SECP256K1: 0,
+      ED25519: 0
+    },
+    ENCODINGS: {
+      NONE: 0,
+      EVM: 0
+    }
+  }
+};
+
 export class Client {
   isPaired = false;
   getActiveWallet = jest.fn().mockReturnValue({ uid: Buffer.from('0') });
+  getFwVersion = jest.fn().mockReturnValue({ major: 15, minor: 0, fix: 0 });
   pair = jest.fn().mockImplementation(async (_secret: string) => {
     // For now we only pair and expect it to fail
     throw new Error('Failed to pair');
@@ -41,7 +64,18 @@ export class Client {
     const childNode = hdNode.derivePath(path);
     const wallet = new Wallet(childNode.privateKey);
     if (opts.currency === 'ETH') {
-      const { signerPath, chainId, ...transaction } = opts.data as SignTxOpts;
+      // Pulls out signerPath, chainId, and all the generic transaction fields so validation of
+      // transaction succeeds
+      const {
+        signerPath,
+        chainId,
+        payload,
+        curveType,
+        hashType,
+        encodingType,
+        decoder,
+        ...transaction
+      } = opts.data as SignTxOpts;
 
       const isEIP1559 =
         transaction.maxFeePerGas !== undefined && transaction.maxPriorityFeePerGas !== undefined;
