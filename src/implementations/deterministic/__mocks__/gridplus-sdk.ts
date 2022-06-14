@@ -1,13 +1,43 @@
+import type { TransactionRequest } from '@ethersproject/abstract-provider';
+import type { BytesLike } from '@ethersproject/bytes';
 import { arrayify, splitSignature } from '@ethersproject/bytes';
 import { HDNode } from '@ethersproject/hdnode';
 import type { Transaction } from '@ethersproject/transactions';
 import { parse } from '@ethersproject/transactions';
 import { Wallet } from '@ethersproject/wallet';
 import { Buffer } from 'buffer';
-import type { AddressesOpts, SignMessageOpts, SignOpts, SignTxOpts } from 'gridplus-sdk';
+import type {
+  AddressesOpts,
+  SignMessageOpts,
+  SignOpts,
+  SignTxOptsGeneric,
+  SignTxOptsLegacy
+} from 'gridplus-sdk';
 
 import { fMnemonicPhrase } from '../../../../.jest/__fixtures__';
 import { getPathPrefix, stripHexPrefix, toChecksumAddress } from '../../../utils';
+
+export const Utils = {
+  fetchCalldataDecoder: jest.fn()
+};
+
+export const Constants = {
+  SIGNING: {
+    HASHES: {
+      NONE: 0,
+      KECCAK256: 0,
+      SHA256: 0
+    },
+    CURVES: {
+      SECP256K1: 0,
+      ED25519: 0
+    },
+    ENCODINGS: {
+      NONE: 0,
+      EVM: 0
+    }
+  }
+};
 
 const hdNode = HDNode.fromMnemonic(fMnemonicPhrase);
 
@@ -24,6 +54,7 @@ const convertPathToString = (path: number[]): string =>
 export class Client {
   isPaired = false;
   getActiveWallet = jest.fn().mockReturnValue({ uid: Buffer.from('0') });
+  getFwVersion = jest.fn().mockReturnValue({ major: 0, minor: 14, fix: 0 });
   pair = jest.fn().mockImplementation(async (_secret: string) => {
     // For now we only pair and expect it to fail
     throw new Error('Failed to pair');
@@ -41,7 +72,7 @@ export class Client {
     const childNode = hdNode.derivePath(path);
     const wallet = new Wallet(childNode.privateKey);
     if (opts.currency === 'ETH') {
-      const { signerPath, chainId, ...transaction } = opts.data as SignTxOpts;
+      const { signerPath, chainId, ...transaction } = opts.data as SignTxOptsLegacy;
 
       const isEIP1559 =
         transaction.maxFeePerGas !== undefined && transaction.maxPriorityFeePerGas !== undefined;
@@ -71,6 +102,21 @@ export class Client {
           v: v === 0 ? Buffer.from([]) : Buffer.from([v]),
           r: stripHexPrefix(r),
           s: stripHexPrefix(s)
+        }
+      };
+    } else {
+      // Generic signing pathway - for this mock does ETH signing
+      const { payload } = opts.data as SignTxOptsGeneric;
+
+      const { v: _v, r: _r, s: _s, ...transaction } = parse((payload as unknown) as BytesLike);
+
+      const signedTransaction = await wallet.signTransaction(transaction as TransactionRequest);
+      const { v, r, s } = parse(signedTransaction) as Required<Transaction>;
+      return {
+        sig: {
+          v: Buffer.from([v]),
+          r: Buffer.from(stripHexPrefix(r), 'hex'),
+          s: Buffer.from(stripHexPrefix(s), 'hex')
         }
       };
     }

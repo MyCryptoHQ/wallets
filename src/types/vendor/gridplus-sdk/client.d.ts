@@ -7,10 +7,17 @@ declare module 'gridplus-sdk' {
     payload: string;
   }
 
-  type SignTxOpts = {
+  type SignTxOpts = SignTxOptsLegacy | SignTxOptsGeneric;
+
+  type SignTxOptsLegacy = {
     signerPath: number[];
     // @todo Improve
   } & UnsignedTransaction;
+
+  interface SignTxOptsGeneric {
+    signerPath: number[];
+    payload: Uint8Array[];
+  }
 
   interface SignOpts {
     currency: 'ETH' | 'ETH_MSG' | 'BTC';
