@@ -3,9 +3,11 @@ import {
   fMessageToSign,
   fSignedMessage,
   fSignedTx,
+  fSignedTxContractDeployment,
   fSignedTxEIP1559,
   fTransactionRequest,
-  fTransactionRequestEIP1559
+  fTransactionRequestEIP1559,
+  fTransactionRequestEIP1559ContractDeployment
 } from '../../../.jest/__fixtures__';
 import { DEFAULT_ETH, LEDGER_LIVE_ETH } from '../../dpaths';
 import { getFullPath } from '../../utils';
@@ -140,6 +142,15 @@ describe('GridPlusWalletInstance', () => {
       ).resolves.toBe(fSignedTxEIP1559);
     });
 
+    it('signs a contract deployment transaction', async () => {
+      const wallet = new GridPlusWallet(config);
+      const instance = await wallet.getWallet(DEFAULT_ETH, 0);
+
+      await expect(
+        instance.signTransaction(fTransactionRequestEIP1559ContractDeployment)
+      ).resolves.toBe(fSignedTxContractDeployment);
+    });
+
     it('signs a EIP 1559 transaction with v = 0', async () => {
       const wallet = new GridPlusWallet(config);
       const instance = await wallet.getWallet(DEFAULT_ETH, 0);
@@ -189,6 +200,20 @@ describe('GridPlusWalletInstance', () => {
       await expect(
         instance.signTransaction({ ...fTransactionRequestEIP1559, data: undefined })
       ).resolves.toBe(fSignedTxEIP1559);
+    });
+
+    it('signs a contract deployment transaction with generic signing', async () => {
+      const wallet = new GridPlusWallet(config);
+      const instance = await wallet.getWallet(DEFAULT_ETH, 0);
+
+      jest
+        // @ts-expect-error Spying on private field
+        .spyOn(instance['client'], 'getFwVersion')
+        .mockReturnValueOnce({ major: 0, minor: 15, fix: 0 });
+
+      await expect(
+        instance.signTransaction(fTransactionRequestEIP1559ContractDeployment)
+      ).resolves.toBe(fSignedTxContractDeployment);
     });
 
     it('signs a EIP 1559 transaction with v = 0 with generic signing', async () => {
