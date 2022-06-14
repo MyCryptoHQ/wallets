@@ -138,12 +138,12 @@ export class GridPlusWalletInstance implements Wallet {
       const payload = Buffer.from(arrayify(serializeTransaction({ ...transaction, type })));
 
       const callDataDecoder =
-        transaction.to !== null || transaction.to !== undefined
+        transaction.to != null && transaction.data != null
           ? await Utils.fetchCalldataDecoder(
-              transaction.data?.toString() ?? '',
-              transaction.to!,
+              transaction.data.toString(),
+              transaction.to,
               transaction.chainId!
-            )
+            ).catch(() => undefined)
           : undefined;
 
       return {

@@ -18,7 +18,7 @@ import { fMnemonicPhrase } from '../../../../.jest/__fixtures__';
 import { getPathPrefix, stripHexPrefix, toChecksumAddress } from '../../../utils';
 
 export const Utils = {
-  fetchCalldataDecoder: jest.fn()
+  fetchCalldataDecoder: jest.fn().mockRejectedValue('fetchCalldataDecoder failed')
 };
 
 export const Constants = {
