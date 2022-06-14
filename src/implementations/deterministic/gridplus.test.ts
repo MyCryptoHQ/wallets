@@ -156,6 +156,7 @@ describe('GridPlusWalletInstance', () => {
       const instance = await wallet.getWallet(DEFAULT_ETH, 0);
 
       jest
+        // @ts-expect-error Spying on private field
         .spyOn(instance['client'], 'getFwVersion')
         .mockReturnValueOnce({ major: 0, minor: 15, fix: 0 });
 
@@ -167,6 +168,7 @@ describe('GridPlusWalletInstance', () => {
       const instance = await wallet.getWallet(DEFAULT_ETH, 0);
 
       jest
+        // @ts-expect-error Spying on private field
         .spyOn(instance['client'], 'getFwVersion')
         .mockReturnValueOnce({ major: 0, minor: 15, fix: 0 });
 
@@ -180,6 +182,7 @@ describe('GridPlusWalletInstance', () => {
       const instance = await wallet.getWallet(DEFAULT_ETH, 0);
 
       jest
+        // @ts-expect-error Spying on private field
         .spyOn(instance['client'], 'getFwVersion')
         .mockReturnValueOnce({ major: 0, minor: 15, fix: 0 });
 
@@ -193,6 +196,7 @@ describe('GridPlusWalletInstance', () => {
       const instance = await wallet.getWallet(DEFAULT_ETH, 0);
 
       jest
+        // @ts-expect-error Spying on private field
         .spyOn(instance['client'], 'getFwVersion')
         .mockReturnValueOnce({ major: 0, minor: 15, fix: 0 });
 
