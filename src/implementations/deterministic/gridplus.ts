@@ -1,7 +1,7 @@
 /* eslint-disable no-restricted-globals */
 import type { TransactionRequest } from '@ethersproject/abstract-provider';
 import type { SignatureLike } from '@ethersproject/bytes';
-import { hexlify, arrayify } from '@ethersproject/bytes';
+import { hexlify } from '@ethersproject/bytes';
 import type { HDNode } from '@ethersproject/hdnode';
 import { toUtf8Bytes } from '@ethersproject/strings';
 import type { UnsignedTransaction } from '@ethersproject/transactions';
@@ -19,7 +19,8 @@ import {
   sanitizeTx,
   toChecksumAddress,
   keys,
-  getConvertedPath
+  getConvertedPath,
+  stripHexPrefix
 } from '../../utils';
 import type { Wallet } from '../../wallet';
 import { wrapGridPlusError } from './errors';
@@ -135,7 +136,10 @@ export class GridPlusWalletInstance implements Wallet {
     transaction: UnsignedTransaction
   ) {
     if (fwVersion && (fwVersion.major > 0 || fwVersion.minor >= 15)) {
-      const payload = Buffer.from(arrayify(serializeTransaction({ ...transaction, type })));
+      const payload = Buffer.from(
+        stripHexPrefix(serializeTransaction({ ...transaction, type })),
+        'hex'
+      );
 
       const callDataDecoder =
         transaction.to != null && transaction.data != null
