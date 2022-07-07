@@ -7,8 +7,7 @@ import { toUtf8Bytes } from '@ethersproject/strings';
 import type { UnsignedTransaction } from '@ethersproject/transactions';
 import { serialize as serializeTransaction } from '@ethersproject/transactions';
 import crypto from 'crypto';
-import { Client } from 'gridplus-sdk';
-import { promisify } from 'util';
+import { Client, Constants, Utils } from 'gridplus-sdk';
 
 import type { DerivationPath } from '../../dpaths';
 import type { DeterministicAddress, TAddress } from '../../types';
@@ -20,7 +19,8 @@ import {
   sanitizeTx,
   toChecksumAddress,
   keys,
-  getConvertedPath
+  getConvertedPath,
+  stripHexPrefix
 } from '../../utils';
 import type { Wallet } from '../../wallet';
 import { wrapGridPlusError } from './errors';
@@ -85,7 +85,7 @@ const getClient = async (
   config: GridPlusConfiguration,
   client?: Client
 ): Promise<{ config: GridPlusConfiguration; client: Client }> => {
-  if (client?.isPaired && client?.hasActiveWallet()) {
+  if (client?.isPaired && client?.getActiveWallet() !== null) {
     return { client, config };
   }
 
@@ -93,19 +93,16 @@ const getClient = async (
 
   if (client === undefined && deviceID !== undefined && password !== undefined) {
     const privKey = getPrivateKey(config);
-    client = new Client({ ...clientConfig, privKey, crypto });
+    client = new Client({ ...clientConfig, privKey });
   }
 
   if (client && deviceID !== undefined && password !== undefined) {
-    const connect = promisify(client.connect).bind(client);
-
-    const isPaired = await connect(deviceID).catch(wrapGridPlusError);
+    const isPaired = await client.connect(deviceID).catch(wrapGridPlusError);
     if (isPaired) {
       return { client, config };
     } else {
       // Hack to dismiss pairing screen
-      const pair = promisify(client.pair).bind(client);
-      await pair('').catch(() => null);
+      await client.pair('').catch(() => null);
     }
   }
 
@@ -128,19 +125,42 @@ export class GridPlusWalletInstance implements Wallet {
     return this.client;
   }
 
-  async signTransaction(rawTx: TransactionRequest): Promise<string> {
-    const { type, ...transaction } = sanitizeTx(rawTx);
-
-    if (transaction.chainId === undefined || transaction.nonce === undefined) {
-      throw new WalletsError(
-        'Missing chainId or nonce on transaction',
-        WalletsErrorCode.MISSING_ARGUMENTS
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  async buildSigningRequest(
+    fwVersion: {
+      fix: number;
+      minor: number;
+      major: number;
+    } | null,
+    type: number | undefined,
+    transaction: UnsignedTransaction
+  ) {
+    if (fwVersion && (fwVersion.major > 0 || fwVersion.minor >= 15)) {
+      const payload = Buffer.from(
+        stripHexPrefix(serializeTransaction({ ...transaction, type })),
+        'hex'
       );
+
+      const callDataDecoder =
+        transaction.to != null && transaction.data != null
+          ? await Utils.fetchCalldataDecoder(
+              transaction.data.toString(),
+              transaction.to,
+              transaction.chainId!
+            ).catch(() => undefined)
+          : undefined;
+
+      return {
+        data: {
+          payload,
+          curveType: Constants.SIGNING.CURVES.SECP256K1,
+          hashType: Constants.SIGNING.HASHES.KECCAK256,
+          encodingType: Constants.SIGNING.ENCODINGS.EVM,
+          signerPath: getConvertedPath(this.path),
+          decoder: callDataDecoder?.def
+        }
+      };
     }
-
-    this.client = await this.getClient();
-
-    const sign = promisify(this.client.sign).bind(this.client);
 
     const { accessList, ...preHexTx } = transaction;
 
@@ -154,21 +174,42 @@ export class GridPlusWalletInstance implements Wallet {
       {}
     );
 
-    const result = await sign({
+    return {
       currency: 'ETH',
       data: {
         ...hexlified,
         ...(accessList ? { accessList } : {}),
-        type,
         signerPath: getConvertedPath(this.path)
       }
-    }).catch(wrapGridPlusError);
+    };
+  }
 
+  async signTransaction(rawTx: TransactionRequest): Promise<string> {
+    const { type, ...transaction } = sanitizeTx(rawTx);
+
+    if (transaction.chainId === undefined || transaction.nonce === undefined) {
+      throw new WalletsError(
+        'Missing chainId or nonce on transaction',
+        WalletsErrorCode.MISSING_ARGUMENTS
+      );
+    }
+
+    const client = await this.getClient();
+    const fwVersion = client.getFwVersion();
+
+    const request = await this.buildSigningRequest(
+      fwVersion,
+      type as number | undefined,
+      transaction
+    );
+
+    // @ts-expect-error Type is wrong, currency is not required
+    const result = await client.sign(request).catch(wrapGridPlusError);
     const signature: SignatureLike = {
       // 0 is returned as an empty buffer
-      v: result.sig.v.length === 0 ? 0 : parseInt(result.sig.v.toString('hex'), 16),
-      r: addHexPrefix(result.sig.r),
-      s: addHexPrefix(result.sig.s)
+      v: result.sig!.v.length === 0 ? 0 : parseInt(result.sig!.v.toString('hex'), 16),
+      r: addHexPrefix(result.sig!.r.toString('hex')),
+      s: addHexPrefix(result.sig!.s.toString('hex'))
     };
 
     return serializeTransaction({ ...transaction, type }, signature);
@@ -186,24 +227,27 @@ export class GridPlusWalletInstance implements Wallet {
 
     const client = await this.getClient();
 
-    const sign = promisify(client.sign).bind(client);
+    const result = await client
+      .sign({
+        currency: 'ETH_MSG',
+        data
+      })
+      .catch(wrapGridPlusError);
 
-    const result = await sign({
-      currency: 'ETH_MSG',
-      data
-    }).catch(wrapGridPlusError);
-
-    return addHexPrefix(result.sig.r + result.sig.s + result.sig.v.toString('hex'));
+    return addHexPrefix(
+      result.sig!.r.toString('hex') + result.sig!.s.toString('hex') + result.sig!.v.toString('hex')
+    );
   }
 
   async getAddress(): Promise<TAddress> {
     if (!this.address) {
       const client = await this.getClient();
-      const getAddresses = promisify(client.getAddresses).bind(client);
-      const addresses = await getAddresses({
-        startPath: getConvertedPath(this.path),
-        n: 1
-      }).catch(wrapGridPlusError);
+      const addresses = ((await client
+        .getAddresses({
+          startPath: getConvertedPath(this.path),
+          n: 1
+        })
+        .catch(wrapGridPlusError)) as unknown) as string[];
 
       this.address = addresses[0] as TAddress;
     }
@@ -259,12 +303,13 @@ export class GridPlusWallet extends HardwareWallet {
     }
 
     const client = await this.getClient();
-    const getAddresses = promisify(client.getAddresses).bind(client);
     const dPath = getFullPath(path, offset);
-    const addresses: string[] = await getAddresses({
-      startPath: getConvertedPath(dPath),
-      n: limit
-    }).catch(wrapGridPlusError);
+    const addresses = ((await client
+      .getAddresses({
+        startPath: getConvertedPath(dPath),
+        n: limit
+      })
+      .catch(wrapGridPlusError)) as unknown) as string[];
 
     return addresses.map((address, i) => {
       const index = offset + i;
