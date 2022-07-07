@@ -131,7 +131,7 @@ export class GridPlusWalletInstance implements Wallet {
       minor: number;
       major: number;
     } | null,
-    type: number | null | undefined,
+    type: number | undefined,
     transaction: UnsignedTransaction
   ) {
     if (fwVersion && (fwVersion.major > 0 || fwVersion.minor >= 15)) {
@@ -193,7 +193,11 @@ export class GridPlusWalletInstance implements Wallet {
     const client = await this.getClient();
     const fwVersion = client.getFwVersion();
 
-    const request = await this.buildSigningRequest(fwVersion, type, transaction);
+    const request = await this.buildSigningRequest(
+      fwVersion,
+      type as number | undefined,
+      transaction
+    );
 
     // @ts-expect-error Type is wrong, currency is not required
     const result = await client.sign(request).catch(wrapGridPlusError);

@@ -168,7 +168,7 @@ describe('GridPlusWalletInstance', () => {
 
       jest
         // @ts-expect-error Spying on private field
-        .spyOn(instance['client'], 'getFwVersion')
+        .spyOn(instance.client, 'getFwVersion')
         .mockReturnValueOnce({ major: 0, minor: 15, fix: 0 });
 
       await expect(instance.signTransaction(fTransactionRequest)).resolves.toBe(fSignedTx);
@@ -180,7 +180,7 @@ describe('GridPlusWalletInstance', () => {
 
       jest
         // @ts-expect-error Spying on private field
-        .spyOn(instance['client'], 'getFwVersion')
+        .spyOn(instance.client, 'getFwVersion')
         .mockReturnValueOnce({ major: 0, minor: 15, fix: 0 });
 
       await expect(instance.signTransaction(fTransactionRequestEIP1559)).resolves.toBe(
@@ -194,7 +194,7 @@ describe('GridPlusWalletInstance', () => {
 
       jest
         // @ts-expect-error Spying on private field
-        .spyOn(instance['client'], 'getFwVersion')
+        .spyOn(instance.client, 'getFwVersion')
         .mockReturnValueOnce({ major: 0, minor: 15, fix: 0 });
 
       await expect(
@@ -208,7 +208,7 @@ describe('GridPlusWalletInstance', () => {
 
       jest
         // @ts-expect-error Spying on private field
-        .spyOn(instance['client'], 'getFwVersion')
+        .spyOn(instance.client, 'getFwVersion')
         .mockReturnValueOnce({ major: 0, minor: 15, fix: 0 });
 
       await expect(
@@ -222,7 +222,7 @@ describe('GridPlusWalletInstance', () => {
 
       jest
         // @ts-expect-error Spying on private field
-        .spyOn(instance['client'], 'getFwVersion')
+        .spyOn(instance.client, 'getFwVersion')
         .mockReturnValueOnce({ major: 0, minor: 15, fix: 0 });
 
       await expect(
