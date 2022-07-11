@@ -26,7 +26,7 @@ import type { Wallet } from '../../wallet';
 import { wrapGridPlusError } from './errors';
 import { HardwareWallet } from './hardware-wallet';
 
-const POPUP_BASE_URL = 'https://wallet.gridplus.io';
+const POPUP_BASE_URL = 'https://lattice.gridplus.io';
 
 export interface GridPlusConfiguration extends GridPlusCredentials {
   // For client
