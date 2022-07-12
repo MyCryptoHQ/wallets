@@ -14,7 +14,7 @@ import { getFullPath } from '../../utils';
 import { GridPlusWallet, GridPlusWalletInstance } from './gridplus';
 
 const config = { name: 'MyCrypto', deviceID: 'foo', password: 'bar' };
-const origin = 'https://wallet.gridplus.io';
+const origin = 'https://lattice.gridplus.io';
 
 describe('GridPlusWalletInstance', () => {
   describe('pairing', () => {
