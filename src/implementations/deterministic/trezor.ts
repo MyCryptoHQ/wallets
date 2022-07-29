@@ -2,8 +2,9 @@ import type { TransactionRequest } from '@ethersproject/abstract-provider';
 import type { SignatureLike } from '@ethersproject/bytes';
 import { HDNode } from '@ethersproject/hdnode';
 import { serialize as serializeTransaction } from '@ethersproject/transactions';
-import type { EthereumTransaction, HDNodeResponse, Manifest } from 'trezor-connect';
-import TrezorConnect from 'trezor-connect';
+import type { EthereumTransaction, Manifest } from '@trezor/connect';
+import TrezorConnect from '@trezor/connect';
+import type { HDNodeResponse } from '@trezor/connect/lib/types/api/getPublicKey';
 
 import type { DerivationPath } from '../../dpaths';
 import type { DeterministicAddress, TAddress } from '../../types';
