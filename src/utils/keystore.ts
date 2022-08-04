@@ -97,7 +97,7 @@ const V3KeystoreStruct = type({
 
 export const getKeystoreType = (json: string): KeystoreType => {
   const [error, keystore] = safeJSONParse(json);
-  if (error) {
+  if (error !== null && error !== undefined) {
     throw new Error('Invalid keystore file: cannot parse JSON');
   }
 
