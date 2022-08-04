@@ -3,7 +3,7 @@ import { computePublicKey } from '@ethersproject/signing-key';
 import type { Transaction } from '@ethersproject/transactions';
 import { parse } from '@ethersproject/transactions';
 import { Wallet } from '@ethersproject/wallet';
-import type { EthereumTransaction, EthereumTransactionEIP1559 } from 'trezor-connect';
+import type { EthereumTransaction, EthereumTransactionEIP1559 } from '@trezor/connect';
 
 import { fMnemonicPhrase } from '../../../../.jest/__fixtures__';
 import { addHexPrefix } from '../../../utils';

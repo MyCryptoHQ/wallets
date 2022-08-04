@@ -1,4 +1,4 @@
-import TrezorConnect from 'trezor-connect';
+import TrezorConnect from '@trezor/connect';
 
 import {
   fAddress,
