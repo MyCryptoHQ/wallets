@@ -1693,10 +1693,10 @@
   resolved "https://registry.yarnpkg.com/@trezor/connect-plugin-ethereum/-/connect-plugin-ethereum-9.0.0-beta.1.tgz#e7b0de5647882e120856b0102aca0d13d9f22abe"
   integrity sha512-bw6vs7zWBKaYh8itT0ai6u8fwUIdqSCdxvgvxQCv3mG8x2X8OL8iyTWsSycpmPMqIEMs6PyWUsIriQ6g2fUHXw==
 
-"@trezor/connect@^9.0.0-beta.5":
-  version "9.0.0-beta.5"
-  resolved "https://registry.yarnpkg.com/@trezor/connect/-/connect-9.0.0-beta.5.tgz#bd3710e0e9906a5e0e42bdf5c0e41c12df6d4281"
-  integrity sha512-7yqBHexLrck7TZ4GzTdpWnnWmaiLgGU1ktAtZzeWrDjycv0XJkRr4eXU/bQRnL0dGtvQXuxWT0qObDby6PBryQ==
+"@trezor/connect@^9.0.0-beta.6":
+  version "9.0.0-beta.6"
+  resolved "https://registry.yarnpkg.com/@trezor/connect/-/connect-9.0.0-beta.6.tgz#ef414b31f6835a10257d960f54563d4bcb9139d5"
+  integrity sha512-t+0ZqM24SqpqmzMqIuXxoSwe+Lc1QdapTJjNnTd1+YmwtAc+GoHQZB8OK6HwJkJoA6ATvnWsRiNEAkqjeOWTlg==
   dependencies:
     "@trezor/blockchain-link" "^2.1.3"
     "@trezor/connect-common" "0.0.8"
